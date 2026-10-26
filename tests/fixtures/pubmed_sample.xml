@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<PubmedArticleSet><PubmedArticle><MedlineCitation><PMID>11111111</PMID><Article>
+<Journal><JournalIssue><PubDate><Year>2024</Year></PubDate></JournalIssue><Title>Journal of Walking</Title><ISOAbbreviation>J Walk</ISOAbbreviation></Journal>
+<ArticleTitle>A sample trial of <i>walking</i>.</ArticleTitle>
+<Abstract><AbstractText Label="BACKGROUND" NlmCategory="BACKGROUND">Walking is good.</AbstractText><AbstractText Label="RESULTS">Steps rose.</AbstractText></Abstract>
+<AuthorList><Author><LastName>Kim</LastName><ForeName>Minji</ForeName><AffiliationInfo><Affiliation>Seoul Univ.</Affiliation></AffiliationInfo></Author><Author><CollectiveName>Walk Group</CollectiveName></Author></AuthorList>
+<PublicationTypeList><PublicationType>Randomized Controlled Trial</PublicationType></PublicationTypeList>
+</Article><MeshHeadingList><MeshHeading><DescriptorName>Walking</DescriptorName></MeshHeading></MeshHeadingList></MedlineCitation>
+<PubmedData><ArticleIdList><ArticleId IdType="pubmed">11111111</ArticleId><ArticleId IdType="doi">10.1000/walk.1</ArticleId><ArticleId IdType="pmc">PMC0000001</ArticleId></ArticleIdList></PubmedData>
+</PubmedArticle></PubmedArticleSet>

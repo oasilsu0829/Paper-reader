@@ -1,0 +1,324 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HIV 여성의 긍정 요인</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 학생의 논문 리딩 노트. 왼쪽 목차 레일 + 72ch 본문 칼럼, 형광펜은 핵심 문장에만 쓴다. */
+:root {
+  --paper: #f5f7f6;
+  --surface: #ffffff;
+  --ink: #18212b;
+  --ink-2: #4f5b67;
+  --rule: #d8dfe2;
+  --accent: #2148c9;
+  --accent-soft: #e6ecfb;
+  --marker-bg: #f4e65c;
+  --marker-fg: #18212b;
+  --good: #1c7a4e;
+  --warn: #a8530f;
+  --warn-soft: #fbefe3;
+  --bar-muted: #b7c2cc;
+  --font-display: "Hahmlet", "Noto Serif KR", "AppleMyungjo", Georgia, serif;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.1875rem;
+  --step-2: 1.5rem;
+  --step-3: 2.125rem;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1417; --surface: #161d22; --ink: #e5eaee; --ink-2: #9ba8b4; --rule: #29333b;
+    --accent: #85a5ff; --accent-soft: #1b2645; --marker-bg: #5c5416; --marker-fg: #fff6b8;
+    --good: #5cc795; --warn: #f0a160; --warn-soft: #33241a; --bar-muted: #4a5763;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1417; --surface: #161d22; --ink: #e5eaee; --ink-2: #9ba8b4; --rule: #29333b;
+  --accent: #85a5ff; --accent-soft: #1b2645; --marker-bg: #5c5416; --marker-fg: #fff6b8;
+  --good: #5cc795; --warn: #f0a160; --warn-soft: #33241a; --bar-muted: #4a5763;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--font-body); font-size: var(--step-0); line-height: 1.75;
+  word-break: keep-all; overflow-wrap: anywhere;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, summary:focus-visible, .fig-zoom:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+mark { background: linear-gradient(transparent 12%, var(--marker-bg) 12%, var(--marker-bg) 88%, transparent 88%); color: var(--marker-fg); padding: 0 .15em; }
+code { font-family: var(--font-mono); font-size: .9em; background: var(--accent-soft); padding: .05em .35em; border-radius: 3px; }
+
+.shell { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 48px; padding-block: 40px 96px; }
+main { min-width: 0; max-width: 72ch; }
+
+/* ---------- 목차 레일 */
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; display: grid; gap: 20px; font-size: var(--step--1); }
+.rail-label { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.toc { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; border-left: 1px solid var(--rule); }
+.toc a { display: block; padding: 4px 0 4px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--ink-2); text-decoration: none; }
+.toc a:hover { color: var(--ink); }
+.toc a.on { color: var(--ink); border-left-color: var(--accent); font-weight: 600; }
+.mode { display: inline-grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
+.mode button { font: inherit; font-size: var(--step--1); border: 0; background: transparent; color: var(--ink-2); padding: 6px 12px; cursor: pointer; }
+.mode button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.mode-hint { color: var(--ink-2); margin: 6px 0 0; line-height: 1.5; }
+
+/* ---------- 머리말 */
+.eyebrow { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 6px 14px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: var(--step-3); line-height: 1.3; margin: 14px 0 10px; text-wrap: balance; letter-spacing: -0.01em; }
+.orig-title { color: var(--ink-2); font-size: var(--step-0); margin: 0 0 16px; line-height: 1.55; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--ink-2); font-size: var(--step--1); margin: 0 0 6px; }
+.meta b { color: var(--ink); font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; }
+.chip { font-family: var(--font-mono); font-size: .72rem; border: 1px solid var(--rule); border-radius: 99px; padding: 2px 10px; color: var(--ink-2); background: var(--surface); }
+.tldr { margin: 28px 0 0; font-family: var(--font-display); font-weight: 500; font-size: var(--step-1); line-height: 1.75; }
+.tldr .rail-label { display: block; margin-bottom: 6px; font-family: var(--font-mono); }
+
+/* ---------- 섹션 */
+section { padding-top: 56px; scroll-margin-top: 16px; }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: var(--step-2); line-height: 1.35; margin: 0 0 4px; text-wrap: balance; }
+.kicker { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h3 { font-size: var(--step-1); font-weight: 600; margin: 28px 0 8px; text-wrap: balance; line-height: 1.45; }
+.prose p { margin: 12px 0; }
+.prose ul, .prose ol { padding-left: 1.3em; margin: 10px 0; }
+.prose li { margin: 4px 0; }
+.prose li::marker { color: var(--ink-2); }
+.v-detail { display: none; }
+body.detail .v-detail { display: block; }
+.v-detail { border-left: 2px solid var(--accent-soft); padding-left: 14px; margin: 12px 0; }
+.v-detail > .rail-label { color: var(--accent); }
+
+.points { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 10px; counter-reset: pt; }
+.points li { counter-increment: pt; display: grid; grid-template-columns: 2.2em minmax(0, 1fr); align-items: baseline; }
+.points li::before { content: counter(pt); font-family: var(--font-mono); font-size: .8rem; color: var(--accent); }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin: 20px 0; }
+.stat { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 2px; align-content: start; }
+.stat-v { font-family: var(--font-display); font-weight: 700; font-size: var(--step-2); line-height: 1.2; font-variant-numeric: tabular-nums; }
+.stat-l { font-size: var(--step--1); font-weight: 600; }
+.stat-n { font-size: .78rem; color: var(--ink-2); line-height: 1.5; }
+
+.callout { margin: 18px 0; padding: 12px 16px; border-radius: var(--radius); background: var(--accent-soft); font-size: .95rem; }
+.callout.warn { background: var(--warn-soft); }
+.callout-t { font-weight: 600; display: block; margin-bottom: 2px; }
+.callout p { margin: 4px 0; }
+
+.flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; margin: 20px 0; }
+.flow-step { flex: 1 1 150px; min-width: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px 14px; }
+.flow-step b { display: block; font-size: .95rem; }
+.flow-step span { display: block; font-size: var(--step--1); color: var(--ink-2); line-height: 1.55; margin-top: 2px; }
+.flow-arrow { flex: 0 0 auto; align-self: center; display: grid; justify-items: center; padding: 0 6px; color: var(--ink-2); font-size: .72rem; font-family: var(--font-mono); max-width: 90px; text-align: center; line-height: 1.3; }
+.flow-arrow::before { content: "→"; font-size: 1.1rem; color: var(--accent); }
+.flow.vertical { flex-direction: column; }
+.flow.vertical .flow-step { flex: 0 0 auto; display: grid; grid-template-columns: minmax(0, 10em) minmax(0, 1fr); gap: 4px 14px; align-items: baseline; padding: 10px 14px; }
+.flow.vertical .flow-step span { margin: 0; }
+.flow.vertical .flow-arrow { max-width: none; padding: 2px 0; grid-auto-flow: column; gap: 8px; align-items: center; justify-content: start; margin-left: 2em; }
+.flow.vertical .flow-arrow::before { content: "↓"; }
+@media (max-width: 520px) { .flow.vertical .flow-step { grid-template-columns: minmax(0, 1fr); } }
+.flow-cap, .chart-cap { font-size: var(--step--1); color: var(--ink-2); margin: 6px 0 0; }
+
+.chart { margin: 22px 0; }
+.chart-t { font-weight: 600; font-size: .95rem; margin: 0 0 6px; }
+.chart-scroll { overflow-x: auto; }
+.chart svg { display: block; width: 100%; min-width: 420px; height: auto; }
+.chart .lbl { fill: var(--ink); font-family: var(--font-body); font-size: 13px; }
+.chart .val { fill: var(--ink-2); font-family: var(--font-mono); font-size: 12px; }
+.chart .tick { fill: var(--ink-2); font-family: var(--font-mono); font-size: 11px; }
+.chart .grid { stroke: var(--rule); stroke-width: 1; }
+.chart .zero { stroke: var(--ink-2); stroke-width: 1; }
+.chart .bar { fill: var(--accent); }
+.chart .bar.muted { fill: var(--bar-muted); }
+.chart .bar.warn { fill: var(--warn); }
+.chart .bar.good { fill: var(--good); }
+
+.tbl-wrap { overflow-x: auto; margin: 18px 0; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: var(--step--1); font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; background: var(--paper); }
+tr:last-child td { border-bottom: 0; }
+
+.compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 18px 0; }
+.compare > div { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px 16px; min-width: 0; }
+.compare h4 { margin: 0 0 4px; font-size: .95rem; }
+.compare ul { margin: 0; padding-left: 1.2em; font-size: .95rem; }
+
+pre.mermaid { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px; overflow-x: auto; font-size: var(--step--1); }
+
+/* ---------- 그림 */
+.fig { margin: 28px 0 0; padding-top: 24px; border-top: 1px solid var(--rule); scroll-margin-top: 16px; }
+.fig-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.fig-label { font-family: var(--font-mono); font-size: .8rem; color: var(--accent); }
+.fig h3 { margin: 0; flex: 1 1 260px; }
+.fig-zoom { display: block; width: 100%; margin: 14px 0 0; padding: 10px; border: 1px solid var(--rule); border-radius: var(--radius); background: #fff; cursor: zoom-in; }
+.fig-zoom img { display: block; margin: 0 auto; max-height: 520px; width: auto; max-width: 100%; }
+.fig-zoom-hint { font-size: .75rem; color: var(--ink-2); margin: 4px 0 0; text-align: right; }
+.fig-missing { margin: 14px 0 0; padding: 14px 16px; border: 1px dashed var(--rule); border-radius: var(--radius); color: var(--ink-2); font-size: var(--step--1); }
+.fig-grid { display: grid; gap: 4px; margin-top: 10px; }
+.fig-grid h4 { font-size: var(--step--1); letter-spacing: .04em; color: var(--ink-2); margin: 14px 0 0; font-weight: 600; }
+details { margin: 14px 0 0; }
+summary { cursor: pointer; color: var(--ink-2); font-size: var(--step--1); }
+details[open] summary { margin-bottom: 6px; }
+.orig { font-size: var(--step--1); color: var(--ink-2); line-height: 1.65; }
+
+dialog.lightbox { border: 0; padding: 0; background: transparent; max-width: 100vw; max-height: 100vh; width: 100vw; height: 100vh; }
+dialog.lightbox::backdrop { background: rgba(10, 14, 18, .86); }
+.lb-inner { width: 100%; height: 100%; display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); overflow: auto; }
+.lb-inner img { max-width: 100%; max-height: calc(100vh - 80px); background: #fff; border-radius: 4px; }
+.lb-close { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 12px); right: calc(env(safe-area-inset-right, 0px) + 12px); font: inherit; background: #fff; color: #18212b; border: 0; border-radius: 99px; padding: 6px 14px; cursor: pointer; }
+
+/* ---------- 용어, 퀴즈 */
+.gloss { display: grid; grid-template-columns: minmax(0, 11em) minmax(0, 1fr); gap: 0; margin: 18px 0; border-top: 1px solid var(--rule); }
+.gloss dt, .gloss dd { margin: 0; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+.gloss dt { font-weight: 600; padding-right: 14px; }
+.gloss dt small { display: block; font-weight: 400; font-family: var(--font-mono); font-size: .72rem; color: var(--ink-2); }
+.gloss dd { font-size: .95rem; }
+.quiz details { border-bottom: 1px solid var(--rule); padding: 10px 0; margin: 0; }
+.quiz summary { color: var(--ink); font-size: var(--step-0); font-weight: 600; }
+.quiz details p { margin: 6px 0 0; }
+
+/* ---------- 내 프로젝트 연관성 */
+.proj { margin: 18px 0; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 16px 18px; }
+.proj-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; }
+.proj h3 { margin: 0; }
+.fit { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: .75rem; color: var(--ink-2); }
+.fit i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--rule); }
+.fit i.on { background: var(--accent); }
+.cite { margin: 12px 0 0; padding: 10px 12px; border-left: 3px solid var(--marker-bg); background: var(--paper); font-size: .95rem; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: start; }
+.cite button { font: inherit; font-size: .75rem; border: 1px solid var(--rule); background: var(--surface); color: var(--ink-2); border-radius: 4px; padding: 3px 10px; cursor: pointer; }
+
+footer { margin-top: 72px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: var(--step--1); color: var(--ink-2); }
+footer p { margin: 6px 0; }
+
+@media (max-width: 920px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; padding-block: 0 72px; }
+  main { max-width: none; }
+  .rail { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); padding-block: 10px; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; margin-bottom: 24px; }
+  .rail > .rail-label, .mode-hint { display: none; }
+  .toc { display: flex; overflow-x: auto; border-left: 0; gap: 4px; scrollbar-width: none; }
+  .toc a { white-space: nowrap; border-left: 0; border-bottom: 2px solid transparent; padding: 4px 8px; margin: 0; }
+  .toc a.on { border-bottom-color: var(--accent); }
+  .mode-box { order: 2; }
+  section { scroll-margin-top: 64px; }
+  .gloss { grid-template-columns: minmax(0, 1fr); }
+  .gloss dd { padding-top: 0; }
+  .gloss dt { border-bottom: 0; padding-bottom: 2px; }
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="shell">
+  <nav class="rail" aria-label="목차">
+    <div class="mode-box">
+      <div class="mode" role="group" aria-label="설명 수준">
+        <button type="button" id="mode-easy" aria-pressed="true">쉽게</button>
+        <button type="button" id="mode-detail" aria-pressed="false">자세히</button>
+      </div>
+      <p class="mode-hint">쉽게: 비유와 핵심만<br>자세히: 수치와 통계 설명을 더 보여줌</p>
+    </div>
+    <span class="rail-label">목차</span>
+    <ol class="toc"><li><a href="#overview">한눈에 보기</a></li><li><a href="#abstract">초록을 쉽게 풀면</a></li><li><a href="#background">왜 이 연구를 했나</a></li><li><a href="#methods">어떻게 연구했나</a></li><li><a href="#results">무엇을 찾았나</a></li><li><a href="#discussion">저자들은 어떻게 해석했나</a></li><li><a href="#figures">그림과 표 읽기</a></li><li><a href="#critique">얼마나 믿을 수 있나</a></li><li><a href="#glossary">모르는 단어 정리</a></li><li><a href="#quiz">이해했는지 확인</a></li><li><a href="#relevance">내 프로젝트에 어떻게 쓸까</a></li></ol>
+  </nav>
+  <main>
+<header><div class="eyebrow"><span>논문 리딩 노트</span><span>2026-10-26</span><span>PMID 34713412</span></div><h1>HIV와 함께 사는 여성들의 긍정적 심리 요인과 삶의 주제, 그리고 건강</h1><p class="orig-title" lang="en">Positive Psychological Factors and Life Themes in Relation to Health Outcomes in Women Living with HIV</p><p class="meta"><span><b>Leslie R Brody, Yudelki Firpo-Perretti, Dana Bruck-Segal 외 5명</b></span><span>International Journal of Behavioral Medicine · 2021</span><span><a href="https://pubmed.ncbi.nlm.nih.gov/34713412/" target="_blank" rel="noopener">PubMed</a></span><span><a href="https://doi.org/10.1007/s12529-021-10032-y" target="_blank" rel="noopener">DOI 10.1007/s12529-021-10032-y</a></span></p><div class="chips"><span class="chip">혼합연구</span><span class="chip">n=98</span><span class="chip">자서전 내러티브 코딩</span><span class="chip">편상관 · 매개분석</span><span class="chip">예시 리포트</span></div><p class="tldr"><span class="rail-label">한 줄 요약</span><mark>HIV와 함께 사는 흑인 여성 98명의 인생 이야기를 분석했더니, <mark>수용, 통찰, 마음챙김 같은 긍정 요인을 많이 쓴 사람일수록 우울 증상이 낮았다</mark>. 다만 상관관계라서 원인과 결과는 알 수 없다.</mark></p></header>
+<section id="overview"><span class="kicker">1분 요약</span><h2>한눈에 보기</h2><ol class="points"><li><span>참여자의 인생 전환점 이야기에서 긍정 요인 10가지(감사, 통찰, 연민, 의미 찾기, 수용, 마음챙김, 세대 돌봄, 낙관, 자립, 자비로운 신에 대한 믿음)와 긍정적 삶의 주제 3가지(건강 회복, 좋은 관계, 성취)를 찾았다.</span></li><li><span>긍정 요인을 전반적으로 많이 쓴 사람은 우울 점수가 낮았다 (r = −.30). 특히 수용, 통찰, 마음챙김, 자립, 의미 찾기가 관련 있었다.</span></li><li><span>다른 사람에 대한 연민이 큰 사람은 약을 꾸준히 먹는 비율이 높았다 (r = .21).</span></li><li><span>취업, 졸업 같은 ‘성취’ 이야기가 있는 사람은 바이러스가 검출되지 않을 가능성이 높았고, 이 관계는 복약 순응도로 설명되지 않았다.</span></li><li><span>그러나 긍정 요인 → 성취 → 우울 감소라는 매개 경로는 통계적으로 확인되지 않았다.</span></li></ol><div class="stats"><div class="stat"><span class="stat-v">98명</span><span class="stat-l">참여자</span><span class="stat-n">HIV와 함께 사는 여성, 시카고</span></div><div class="stat"><span class="stat-v">45.3세</span><span class="stat-l">평균 나이</span><span class="stat-n">표준편차 8.87</span></div><div class="stat"><span class="stat-v">90.8%</span><span class="stat-l">아프리카계 미국인</span><span class="stat-n">히스패닉 4.1% 추가</span></div><div class="stat"><span class="stat-v">86.7%</span><span class="stat-l">신체·성적 학대 경험</span><span class="stat-n">평생 한 번 이상 보고</span></div><div class="stat"><span class="stat-v">2회</span><span class="stat-l">건강 측정</span><span class="stat-n">이야기 녹음 때와 약 6개월 뒤</span></div></div></section>
+<section id="abstract"><span class="kicker">초록</span><h2>초록을 쉽게 풀면</h2><div class="prose v-easy"><p>이 연구는 <strong>“힘든 삶을 이야기하는 방식이 건강과 관련 있을까?”</strong> 를 물었습니다.</p>
+<p>연구팀은 HIV 감염인 여성들에게 인생을 바꾼 순간 세 가지를 이야기해 달라고 했습니다. 그 이야기 속에서 감사, 수용, 의미 찾기 같은 ‘마음의 힘’이 얼마나 드러나는지 점수를 매겼고, 이 점수를 우울 증상, 약을 꾸준히 먹는지, 혈액 속 바이러스 양과 비교했습니다.</p>
+<p>결과는 한마디로 <mark>마음의 힘이 드러나는 이야기를 한 사람일수록 덜 우울했다</mark>입니다. 연민은 약 복용과, 성취 경험은 바이러스 억제와 관련 있었습니다.</p></div><div class="prose v-detail"><span class="rail-label">자세히</span><ul><li><strong>설계</strong>: 혼합연구(mixed methods). 질적 자료(자서전 이야기)를 코딩해 숫자로 만든 뒤 양적 건강 지표와 상관분석했다.</li><li><strong>대상</strong>: Women’s Interagency HIV Study(WIHS) 시카고 사이트 참여자 98명, 평균 45.3세, 91% 흑인.</li><li><strong>결과 지표</strong>: CES-D 총점과 4개 하위요인(부정 정서 NA, 긍정 정서 PA, 신체 증상 SS, 대인관계 문제 IP), 항레트로바이러스 치료(ART) 복약 순응도 95% 이상 여부, 바이러스 부하 80 copies/mL 미만 여부.</li><li>두 시점 점수를 합친 값(composite)을 모든 분석에 썼다.</li><li>긍정 요인과 삶의 주제는 긍정 정서(PA)와는 유의한 관계가 없었다.</li></ul></div></section>
+<section id="background"><span class="kicker">배경</span><h2>왜 이 연구를 했나</h2><div class="prose v-easy"><p>미국에서 HIV와 함께 사는 여성은 주로 흑인 여성이고, 가난, 학대, 차별 같은 스트레스를 많이 겪습니다. 이런 사람들에게 <strong>우울증은 가장 흔한 동반 질환</strong>이고, 우울하면 약을 덜 챙겨 먹게 되어 건강이 나빠집니다.</p>
+<p>지금까지 연구는 주로 ‘회피’처럼 나쁜 대처 방식을 봤습니다. 이 연구는 반대로 <strong>무엇이 사람을 버티게 하는지</strong>, 즉 긍정적인 심리 요인을 보려고 했습니다.</p>
+<p>비유하면, 병의 원인만 찾던 것에서 ‘어떤 사람이 잘 버티는지’로 질문을 바꾼 것입니다.</p></div><div class="prose v-detail"><span class="rail-label">자세히</span><ul><li>WIHS 참여 여성의 약 25~30%가 ART 복약에 어려움을 겪고, 우울 유병률은 34~67%에 이른다고 서론에서 인용한다.</li><li>이론적 틀은 프레드릭슨의 <strong>확장-구축 이론</strong>(broaden-and-build theory): 긍정 정서가 주의와 사고를 넓히고, 사회적·개인적 자원을 쌓아 스트레스 반응을 되돌린다는 설명.</li><li>기존 연구는 대부분 자기보고 설문이었다. 저자들은 자서전 이야기가 실제 삶의 경험을 더 잘 반영하고, 본인이 의식하지 못하는 패턴까지 드러낼 수 있다고 본다.</li><li>연구 목표 4가지: (1) 이야기 속 긍정 요인과 삶의 주제 찾기 (2) 둘의 관계 (3) 건강 지표와의 관계 (4) 삶의 주제가 긍정 요인과 건강을 잇는 매개 역할을 하는지.</li></ul></div></section>
+<section id="methods"><span class="kicker">방법</span><h2>어떻게 연구했나</h2><div class="prose v-easy"><p>연구는 이야기를 듣고, 이야기를 점수로 바꾸고, 그 점수를 건강 기록과 비교하는 세 단계였습니다.</p>
+<p>이야기 점수는 8명이 나눠 매기고 서로 맞춰 봤습니다. 시험 채점을 여러 선생님이 교차로 하는 것과 비슷합니다. 코딩하는 사람들은 참여자의 건강 결과를 모르는 상태였습니다.</p></div><div class="prose v-detail"><span class="rail-label">자세히</span><ul><li><strong>이야기 수집 (2008~2012)</strong>: McAdams 등(2006)의 Guided Autobiography Task를 변형. 인생 전환점 3개와 그때의 생각, 감정, 영향을 이야기하게 하고 녹음했다. 면담자는 참여자가 아는 WIHS 직원 2명(흑인 사회복지사, 백인 간호사).</li><li><strong>코딩</strong>: 주제 분석(thematic analysis). 문헌에 있는 요인(연역)과 새로 발견한 요인(귀납)을 함께 썼다. 새 코드가 나오면 이전 이야기를 다시 코딩했고, 새 주제가 더 나오지 않을 때(포화)까지 반복했다.</li><li><strong>점수</strong>: 긍정 요인은 이야기마다 0(없음)~3(많이) 점, 세 이야기 평균. 삶의 주제는 이야기마다 있음/없음(0/1), 세 이야기 평균(0~1).</li><li><strong>신뢰도</strong>: 160개 이야기에서 두 코더 그룹 간 Kendall tau-b 상관이 모두 p &lt; .001.</li><li><strong>분석</strong>: 이야기 단어 수, 학력, 나이를 통제한 편상관. 매개효과는 5,000회 부트스트랩.</li></ul></div><p class="chart-t">연구 흐름</p><div class="flow vertical"><div class="flow-step"><b>98명 모집</b><span>WIHS 시카고, HIV 감염 여성</span></div><div class="flow-arrow" aria-hidden="true"></div><div class="flow-step"><b>인생 전환점 3개 녹음</b><span>자서전 이야기 과제</span></div><div class="flow-arrow" aria-hidden="true"></div><div class="flow-step"><b>8명이 코딩</b><span>긍정 요인 0~3점, 삶의 주제 있음/없음</span></div><div class="flow-arrow" aria-hidden="true"></div><div class="flow-step"><b>건강 지표 2회</b><span>녹음 때와 평균 5.7개월 뒤</span></div><div class="flow-arrow" aria-hidden="true"></div><div class="flow-step"><b>편상관 · 매개분석</b><span>단어 수, 학력, 나이 통제</span></div></div>
+<p class="chart-t">건강 지표를 어떻게 쟀나</p><div class="tbl-wrap"><table><thead><tr><th>지표</th><th>측정</th><th>기준</th></tr></thead><tbody><tr><td>우울 증상</td><td>CES-D 20문항 설문</td><td>총점과 4개 하위요인 (NA, PA, SS, IP)</td></tr><tr><td>복약 순응도</td><td>지난 6개월 자기보고</td><td>95% 이상 복용</td></tr><tr><td>바이러스 부하</td><td>혈액 검사 (NASBA)</td><td>80 copies/mL 미만 = 미검출</td></tr></tbody></table></div><p class="chart-cap">두 시점이 서로 강하게 관련되어 있어(예: CES-D 총점 r = .54) 두 시점을 합친 점수를 썼다.</p></section>
+<section id="results"><span class="kicker">결과</span><h2>무엇을 찾았나</h2><div class="prose v-easy"><p><strong>1. 이야기에서 찾은 것</strong><br>가장 많이 나온 이야기 주제는 HIV 진단과 함께 사는 삶, 트라우마, 그리고 좋아지거나 회복된 인간관계였습니다. 참여자 30% 이상에게서 긍정 요인 10가지와 긍정적 삶의 주제 3가지가 나왔습니다.</p>
+<p><strong>2. 긍정 요인과 삶의 주제</strong><br>긍정 요인을 많이 쓴 사람일수록 성취, 좋은 관계, 건강 회복 이야기도 많았습니다. 특히 <strong>감사</strong>는 세 가지 주제 모두와 관련 있었습니다.</p>
+<p><strong>3. 건강과의 관계</strong><br>긍정 요인은 우울과 관련이 있었지만, 기분 좋은 감정(긍정 정서)과는 뚜렷한 관계가 없었습니다. 우울을 줄이는 것과 행복을 늘리는 것은 다를 수 있다는 뜻입니다.</p>
+<p><strong>4. 매개 경로</strong><br>‘긍정 요인 → 성취 → 덜 우울’이라는 연결은 확인되지 않았습니다. 긍정 요인은 성취를 거치지 않고 우울과 직접 관련 있었습니다.</p></div><div class="prose v-detail"><span class="rail-label">자세히</span><ul><li>긍정 요인 평균과 삶의 주제의 편상관: 성취 r = .31 (p &lt; .01), 좋은 관계 r = .24 (p &lt; .02), 건강 회복 r = .26 (p = .01).</li><li>감사는 성취(.24), 좋은 관계(.41, p &lt; .001), 건강 회복(.24)과 모두 관련.</li><li>성취 주제: CES-D 총점 r = −.21, 신체 증상 r = −.20, 바이러스 미검출 r = .22 (모두 p &lt; .05). 복약 순응도를 통제해도 바이러스와의 관계는 그대로였다.</li><li>긍정 요인 평균과 복약 순응도는 r = .20 (p &lt; .06)으로 경계선. 연민 하나만 순응도와 유의(r = .21).</li><li>매개분석: 총효과 −13.71 (SE 4.50, p &lt; .01), 직접효과 −11.89 (SE 4.71, p = .01), 간접효과 −1.73 (SE 1.60), 95% CI [−7.45, 1.76]. 신뢰구간이 0을 포함하므로 매개효과는 유의하지 않다.</li></ul></div><figure class="chart"><p class="chart-t">긍정 요인 평균 점수와 각 건강 지표의 편상관 (r)</p><div class="chart-scroll"><svg viewBox="0 0 640 242" role="img" aria-label="긍정 요인 평균 점수와 각 건강 지표의 편상관 (r)"><line class="grid" x1="196.0" x2="196.0" y1="6" y2="220"/><text class="tick" x="196.0" y="236" text-anchor="middle">-0.4</text><line class="grid" x1="313.0" x2="313.0" y1="6" y2="220"/><text class="tick" x="313.0" y="236" text-anchor="middle">-0.2</text><line class="grid" x1="430.0" x2="430.0" y1="6" y2="220"/><text class="tick" x="430.0" y="236" text-anchor="middle">0</text><line class="grid" x1="547.0" x2="547.0" y1="6" y2="220"/><text class="tick" x="547.0" y="236" text-anchor="middle">0.2</text><g><title>신체 증상 (SS): -0.33</title><text class="lbl" x="186" y="25.5" text-anchor="end">신체 증상 (SS)</text><rect class="bar " x="236.9" y="12" width="193.1" height="18" rx="2"/><text class="val" x="555" y="25.5">−.33***</text></g><g><title>우울 총점 (TOT): -0.3</title><text class="lbl" x="186" y="55.5" text-anchor="end">우울 총점 (TOT)</text><rect class="bar " x="254.5" y="42" width="175.5" height="18" rx="2"/><text class="val" x="555" y="55.5">−.30**</text></g><g><title>대인관계 문제 (IP): -0.26</title><text class="lbl" x="186" y="85.5" text-anchor="end">대인관계 문제 (IP)</text><rect class="bar " x="277.9" y="72" width="152.1" height="18" rx="2"/><text class="val" x="555" y="85.5">−.26*</text></g><g><title>부정 정서 (NA): -0.25</title><text class="lbl" x="186" y="115.5" text-anchor="end">부정 정서 (NA)</text><rect class="bar " x="283.8" y="102" width="146.2" height="18" rx="2"/><text class="val" x="555" y="115.5">−.25*</text></g><g><title>긍정 정서 (PA): 0.12</title><text class="lbl" x="186" y="145.5" text-anchor="end">긍정 정서 (PA)</text><rect class="bar muted" x="430.0" y="132" width="70.2" height="18" rx="2"/><text class="val" x="555" y="145.5">.12 n.s.</text></g><g><title>복약 순응도: 0.2</title><text class="lbl" x="186" y="175.5" text-anchor="end">복약 순응도</text><rect class="bar muted" x="430.0" y="162" width="117.0" height="18" rx="2"/><text class="val" x="555" y="175.5">.20 (p&lt;.06)</text></g><g><title>바이러스 미검출: 0.13</title><text class="lbl" x="186" y="205.5" text-anchor="end">바이러스 미검출</text><rect class="bar muted" x="430.0" y="192" width="76.0" height="18" rx="2"/><text class="val" x="555" y="205.5">.13 n.s.</text></g><line class="zero" x1="430.0" x2="430.0" y1="6" y2="220"/></svg></div><p class="chart-cap">본문 수치로 다시 그림. 왼쪽(음수)은 긍정 요인이 많을수록 그 증상이 적다는 뜻. 회색은 통계적으로 유의하지 않음. * p&lt;.05, ** p&lt;.01, *** p&lt;.001</p></figure>
+<figure class="chart"><p class="chart-t">두 시점의 복약 순응도와 바이러스 상태 (명)</p><div class="chart-scroll"><svg viewBox="0 0 640 212" role="img" aria-label="두 시점의 복약 순응도와 바이러스 상태 (명)"><line class="grid" x1="196.0" x2="196.0" y1="6" y2="190"/><text class="tick" x="196.0" y="206" text-anchor="middle">0</text><line class="grid" x1="322.7" x2="322.7" y1="6" y2="190"/><text class="tick" x="322.7" y="206" text-anchor="middle">20</text><line class="grid" x1="449.3" x2="449.3" y1="6" y2="190"/><text class="tick" x="449.3" y="206" text-anchor="middle">40</text><line class="grid" x1="576.0" x2="576.0" y1="6" y2="190"/><text class="tick" x="576.0" y="206" text-anchor="middle">60</text><g><title>순응 95%↑ 두 번 모두: 53명</title><text class="lbl" x="186" y="25.5" text-anchor="end">순응 95%↑ 두 번 모두</text><rect class="bar " x="196.0" y="12" width="335.7" height="18" rx="2"/><text class="val" x="584" y="25.5">53명</text></g><g><title>순응 95%↑ 한 번만: 22명</title><text class="lbl" x="186" y="55.5" text-anchor="end">순응 95%↑ 한 번만</text><rect class="bar muted" x="196.0" y="42" width="139.3" height="18" rx="2"/><text class="val" x="584" y="55.5">22명</text></g><g><title>순응 95%↑ 한 번도 없음: 22명</title><text class="lbl" x="186" y="85.5" text-anchor="end">순응 95%↑ 한 번도 없음</text><rect class="bar muted" x="196.0" y="72" width="139.3" height="18" rx="2"/><text class="val" x="584" y="85.5">22명</text></g><g><title>바이러스 미검출 두 번: 48명</title><text class="lbl" x="186" y="115.5" text-anchor="end">바이러스 미검출 두 번</text><rect class="bar " x="196.0" y="102" width="304.0" height="18" rx="2"/><text class="val" x="584" y="115.5">48명</text></g><g><title>바이러스 미검출 한 번: 13명</title><text class="lbl" x="186" y="145.5" text-anchor="end">바이러스 미검출 한 번</text><rect class="bar muted" x="196.0" y="132" width="82.3" height="18" rx="2"/><text class="val" x="584" y="145.5">13명</text></g><g><title>두 번 모두 검출: 37명</title><text class="lbl" x="186" y="175.5" text-anchor="end">두 번 모두 검출</text><rect class="bar muted" x="196.0" y="162" width="234.3" height="18" rx="2"/><text class="val" x="584" y="175.5">37명</text></g></svg></div><p class="chart-cap">결과 지표를 0, 1, 2점으로 만든 근거. 바이러스가 두 번 모두 검출된 사람이 37명으로 적지 않다.</p></figure>
+<p class="chart-t">검증한 매개 모델 (목표 4)</p><div class="flow"><div class="flow-step"><b>긍정 요인</b><span>10가지 평균 점수</span></div><div class="flow-arrow" aria-hidden="true">?</div><div class="flow-step"><b>성취 주제</b><span>취업, 졸업 등</span></div><div class="flow-arrow" aria-hidden="true">?</div><div class="flow-step"><b>우울 감소</b><span>CES-D 총점</span></div></div><p class="flow-cap">간접효과 −1.73, 95% CI [−7.45, 1.76]로 0을 포함해 유의하지 않음. 긍정 요인 → 우울의 직접효과(−11.89, p = .01)는 남아 있었다.</p></section>
+<section id="discussion"><span class="kicker">고찰</span><h2>저자들은 어떻게 해석했나</h2><div class="prose v-easy"><p>저자들은 학대와 가난 같은 큰 어려움 속에서도 많은 여성이 긍정 요인을 보였다는 점 자체를 중요하게 봅니다.</p>
+<ul><li><strong>연민</strong>(98명 중 62명): 남을 돌보는 마음이 자기 생각에만 빠지는 우울을 줄이고, 서로 돕는 관계를 만들 수 있다고 해석합니다. 거꾸로 약을 잘 먹어 건강한 사람이 남을 돌볼 여유가 있을 수도 있다고 덧붙입니다.</li><li><strong>통찰</strong>: 가장 많이 쓰인 요인이고, 과거 경험이 지금의 나에게 어떤 영향을 줬는지 이해하는 힘입니다. 저자들은 이 집단에서 통찰과 정신건강의 관계를 처음 보여 준 연구라고 말합니다.</li><li><strong>긍정 정서와 무관</strong>: 행복감은 긍정 요인보다 계속되는 스트레스나 주변의 지지에 더 좌우될 수 있다고 봅니다. 그래서 좋은 일을 음미하는 기술을 따로 가르칠 필요가 있다고 제안합니다.</li><li><strong>성취</strong>: 긍정심리학의 PERMA 모델에서 A(Accomplishment)에 해당합니다.</li></ul></div><div class="prose v-detail"><span class="rail-label">자세히</span><ul><li>저자들은 구조적 인종차별과 가부장제 같은 체계적 문제 해결이 먼저 필요하다고 명시하고, 그와 함께 회복력을 키우는 요인을 찾는 것이 개입 개발에 도움이 된다고 본다.</li><li>성취와 바이러스 억제의 관계가 복약 순응도로 설명되지 않은 점은, 회피 대처와 바이러스 변화의 관계가 순응도로 설명되지 않았던 Ironson 등의 연구와 같은 방향이라고 해석한다.</li><li>결론에서는 감사, 친절, 긍정적 재평가, 마음챙김을 가르친 HIV 감염인 대상 RCT 두 편을 언급하며, 의미 찾기, 통찰, 연민을 더한 트라우마 인지적 긍정심리 개입을 제안한다.</li></ul></div></section>
+<section id="figures"><span class="kicker">그림·표 해석</span><h2>그림과 표 읽기</h2><div class="prose"><p>이 예시는 그림을 내려받을 수 없는 네트워크 환경에서 만들어서, 논문 원본 그림 대신 <strong>본문에 적힌 수치로 다시 그린 그림</strong>으로 그림 해석 형식을 보여 줍니다. 그림 서버 접속이 허용되면 이 자리에 논문의 실제 그림이 들어갑니다.</p></div><article class="fig" id="f-r1">
+<div class="fig-head"><span class="fig-label">다시 그린 그림 1 · 발산형 막대그래프 (상관계수)</span><h3>어떤 긍정 요인이 우울 총점과 관련 있었나</h3></div>
+<figure class="chart"><div class="chart-scroll"><svg viewBox="0 0 640 242" role="img" aria-label="막대그래프"><line class="grid" x1="196.0" x2="196.0" y1="6" y2="220"/><text class="tick" x="196.0" y="236" text-anchor="middle">-0.3</text><line class="grid" x1="310.7" x2="310.7" y1="6" y2="220"/><text class="tick" x="310.7" y="236" text-anchor="middle">-0.2</text><line class="grid" x1="425.3" x2="425.3" y1="6" y2="220"/><text class="tick" x="425.3" y="236" text-anchor="middle">-0.1</text><line class="grid" x1="540.0" x2="540.0" y1="6" y2="220"/><text class="tick" x="540.0" y="236" text-anchor="middle">0</text><g><title>긍정 요인 평균: -0.3</title><text class="lbl" x="186" y="25.5" text-anchor="end">긍정 요인 평균</text><rect class="bar " x="196.0" y="12" width="344.0" height="18" rx="2"/><text class="val" x="548" y="25.5">−.30**</text></g><g><title>수용: -0.29</title><text class="lbl" x="186" y="55.5" text-anchor="end">수용</text><rect class="bar " x="207.5" y="42" width="332.5" height="18" rx="2"/><text class="val" x="548" y="55.5">−.29**</text></g><g><title>통찰: -0.25</title><text class="lbl" x="186" y="85.5" text-anchor="end">통찰</text><rect class="bar " x="253.3" y="72" width="286.7" height="18" rx="2"/><text class="val" x="548" y="85.5">−.25*</text></g><g><title>마음챙김: -0.21</title><text class="lbl" x="186" y="115.5" text-anchor="end">마음챙김</text><rect class="bar " x="299.2" y="102" width="240.8" height="18" rx="2"/><text class="val" x="548" y="115.5">−.21*</text></g><g><title>자립: -0.21</title><text class="lbl" x="186" y="145.5" text-anchor="end">자립</text><rect class="bar " x="299.2" y="132" width="240.8" height="18" rx="2"/><text class="val" x="548" y="145.5">−.21*</text></g><g><title>의미 찾기: -0.2</title><text class="lbl" x="186" y="175.5" text-anchor="end">의미 찾기</text><rect class="bar " x="310.7" y="162" width="229.3" height="18" rx="2"/><text class="val" x="548" y="175.5">−.20*</text></g><g><title>낙관: -0.18</title><text class="lbl" x="186" y="205.5" text-anchor="end">낙관</text><rect class="bar muted" x="333.6" y="192" width="206.4" height="18" rx="2"/><text class="val" x="548" y="205.5">−.18 (p&lt;.08)</text></g></svg></div><p class="chart-cap">CES-D 총점과의 편상관. 강조색 = p &lt; .05, 회색 = 유의하지 않음. 본문 결과 단락의 수치.</p></figure>
+<div class="fig-grid"><h4>무엇을 보여주나</h4><div class="prose"><p>긍정 요인 각각이 우울 점수와 얼마나 함께 움직이는지를 상관계수(r)로 보여 줍니다.</p></div><h4>읽는 순서</h4><div class="prose"><ol><li><strong>상관계수 읽는 법</strong>: −1에서 1 사이 값입니다. 0이면 관계 없음, 음수면 한쪽이 클수록 다른 쪽이 작다는 뜻입니다.</li><li>막대가 왼쪽(음수)으로 갈수록 ‘이 요인이 많을수록 덜 우울하다’는 관계가 강합니다.</li><li>강조색과 회색을 비교해서, 우연이라고 보기 어려운(유의한) 결과만 골라 봅니다.</li><li>막대 길이를 비교합니다. 가장 긴 것도 −.30 정도입니다.</li></ol></div><h4>핵심 발견</h4><div class="prose"><ul><li>수용(−.29)과 통찰(−.25)이 개별 요인 중 가장 강했다.</li><li>마음챙김, 자립, 의미 찾기도 −.20~−.21로 유의했다.</li><li>낙관은 우울 총점과는 유의하지 않았지만(−.18), 신체 증상과는 유의했다(r = −.24).</li></ul></div><h4>그래서 무슨 의미?</h4><div class="prose"><p>‘무조건 좋게 생각하기’(낙관)보다 <strong>힘든 현실을 받아들이고(수용) 그 경험이 나에게 어떤 의미인지 이해하는 것(통찰, 의미 찾기)</strong> 이 우울과 더 관련 있었다고 볼 수 있습니다. 상담이나 프로그램을 만든다면 이런 요인을 다루는 활동이 후보가 됩니다.</p></div><div class="callout warn"><span class="callout-t">해석할 때 주의</span><p>r = −.30은 심리학에서 <strong>중간 정도</strong> 관계입니다. 우울 차이의 약 9%(r²)만 설명합니다. 또 상관관계라서 ‘수용하면 덜 우울해진다’가 아니라 ‘덜 우울한 사람이 수용을 더 잘 이야기한다’일 수도 있습니다. 여러 요인을 한꺼번에 검정해서 일부는 우연일 수 있다고 저자들도 인정합니다.</p></div></div>
+<div class="prose v-detail"><span class="rail-label">자세히</span><p>단어 수, 학력, 나이를 통제한 편상관(partial correlation)이다. 통찰, 자립, 의미 찾기, 수용은 부정 정서(NA), 신체 증상(SS), 대인관계 문제(IP)와도 각각 유의했다. 긍정 정서(PA)와는 통찰(r = .20, p = .051)과 수용(r = .17, p &lt; .10)만 경계선 수준이었다.</p></div>
+</article><article class="fig" id="f-r2">
+<div class="fig-head"><span class="fig-label">다시 그린 그림 2 · 막대그래프 (편상관)</span><h3>어떤 긍정 요인이 어떤 삶의 주제와 함께 나타났나</h3></div>
+<figure class="chart"><div class="chart-scroll"><svg viewBox="0 0 640 302" role="img" aria-label="막대그래프"><line class="grid" x1="196.0" x2="196.0" y1="6" y2="280"/><text class="tick" x="196.0" y="296" text-anchor="middle">0</text><line class="grid" x1="272.0" x2="272.0" y1="6" y2="280"/><text class="tick" x="272.0" y="296" text-anchor="middle">0.1</text><line class="grid" x1="348.0" x2="348.0" y1="6" y2="280"/><text class="tick" x="348.0" y="296" text-anchor="middle">0.2</text><line class="grid" x1="424.0" x2="424.0" y1="6" y2="280"/><text class="tick" x="424.0" y="296" text-anchor="middle">0.3</text><line class="grid" x1="500.0" x2="500.0" y1="6" y2="280"/><text class="tick" x="500.0" y="296" text-anchor="middle">0.4</text><line class="grid" x1="576.0" x2="576.0" y1="6" y2="280"/><text class="tick" x="576.0" y="296" text-anchor="middle">0.5</text><g><title>감사 · 좋은 관계: 0.41</title><text class="lbl" x="186" y="25.5" text-anchor="end">감사 · 좋은 관계</text><rect class="bar " x="196.0" y="12" width="311.6" height="18" rx="2"/><text class="val" x="584" y="25.5">.41***</text></g><g><title>긍정 요인 평균 · 성취: 0.31</title><text class="lbl" x="186" y="55.5" text-anchor="end">긍정 요인 평균 · 성취</text><rect class="bar muted" x="196.0" y="42" width="235.6" height="18" rx="2"/><text class="val" x="584" y="55.5">.31**</text></g><g><title>연민 · 좋은 관계: 0.29</title><text class="lbl" x="186" y="85.5" text-anchor="end">연민 · 좋은 관계</text><rect class="bar muted" x="196.0" y="72" width="220.4" height="18" rx="2"/><text class="val" x="584" y="85.5">.29**</text></g><g><title>자립 · 성취: 0.28</title><text class="lbl" x="186" y="115.5" text-anchor="end">자립 · 성취</text><rect class="bar muted" x="196.0" y="102" width="212.8" height="18" rx="2"/><text class="val" x="584" y="115.5">.28**</text></g><g><title>마음챙김 · 건강 회복: 0.27</title><text class="lbl" x="186" y="145.5" text-anchor="end">마음챙김 · 건강 회복</text><rect class="bar muted" x="196.0" y="132" width="205.2" height="18" rx="2"/><text class="val" x="584" y="145.5">.27**</text></g><g><title>긍정 요인 평균 · 건강 회복: 0.26</title><text class="lbl" x="186" y="175.5" text-anchor="end">긍정 요인 평균 · 건강 …</text><rect class="bar muted" x="196.0" y="162" width="197.6" height="18" rx="2"/><text class="val" x="584" y="175.5">.26*</text></g><g><title>긍정 요인 평균 · 좋은 관계: 0.24</title><text class="lbl" x="186" y="205.5" text-anchor="end">긍정 요인 평균 · 좋은 …</text><rect class="bar muted" x="196.0" y="192" width="182.4" height="18" rx="2"/><text class="val" x="584" y="205.5">.24*</text></g><g><title>감사 · 성취: 0.24</title><text class="lbl" x="186" y="235.5" text-anchor="end">감사 · 성취</text><rect class="bar muted" x="196.0" y="222" width="182.4" height="18" rx="2"/><text class="val" x="584" y="235.5">.24*</text></g><g><title>감사 · 건강 회복: 0.24</title><text class="lbl" x="186" y="265.5" text-anchor="end">감사 · 건강 회복</text><rect class="bar muted" x="196.0" y="252" width="182.4" height="18" rx="2"/><text class="val" x="584" y="265.5">.24**</text></g></svg></div><p class="chart-cap">목표 2 결과 단락의 편상관. 모두 p &lt; .05.</p></figure>
+<div class="fig-grid"><h4>무엇을 보여주나</h4><div class="prose"><p>이야기 속 마음의 힘(긍정 요인)과 이야기의 내용(삶의 주제)이 같이 나타나는 정도입니다.</p></div><h4>읽는 순서</h4><div class="prose"><ol><li>막대 이름의 앞은 긍정 요인, 뒤는 삶의 주제입니다.</li><li>모두 양수이므로 ‘그 요인을 많이 쓴 사람이 그 주제 이야기도 많이 했다’는 뜻입니다.</li><li>강조색 막대 하나(감사 · 좋은 관계)가 다른 것보다 확실히 깁니다.</li></ol></div><h4>핵심 발견</h4><div class="prose"><ul><li>감사와 좋은 관계의 관련성이 .41로 가장 강했다.</li><li>감사는 성취, 좋은 관계, 건강 회복 세 주제 모두와 관련된 유일한 요인이었다.</li></ul></div><h4>그래서 무슨 의미?</h4><div class="prose"><p>저자들은 긍정 요인과 좋은 삶의 경험이 서로를 키우는 <strong>상승 나선</strong>(upward spiral)일 수 있다고 봅니다. 감사하는 마음이 관계를 좋게 하고, 좋은 관계가 다시 감사할 일을 만드는 식입니다.</p></div><div class="callout warn"><span class="callout-t">해석할 때 주의</span><p>같은 이야기에서 두 가지를 동시에 코딩했기 때문에, 이야기를 길고 풍부하게 하는 사람이 둘 다 높게 나올 수 있습니다. 연구팀은 이를 줄이려고 단어 수를 통제했습니다.</p></div></div>
+</article></section>
+<section id="critique"><span class="kicker">비판적 읽기</span><h2>얼마나 믿을 수 있나</h2><div class="compare"><div><h4>믿을 만한 점</h4><ul><li>설문 대신 <strong>본인의 인생 이야기</strong>를 분석해서 실제 삶에 가까운 자료를 썼다.</li><li>연구에서 잘 다뤄지지 않던 집단(가난, 트라우마를 겪은 흑인 HIV 여성)을 대상으로 했다.</li><li>건강 지표를 두 시점에서 쟀고, 바이러스 부하는 혈액 검사라는 객관적 지표다.</li><li>코더 8명, 두 그룹 간 신뢰도 확인, 코더는 건강 결과를 모르게 했다.</li></ul></div><div><h4>조심할 점</h4><ul><li><strong>상관관계 연구</strong>라 인과 방향을 알 수 없다 (저자들도 첫 번째 한계로 꼽음).</li><li>98명으로 작은 표본이고 한 도시 한 코호트다.</li><li>13개 요인·주제를 여러 결과와 비교해서 <strong>우연히 유의하게 나온 결과</strong>가 섞였을 수 있다.</li><li>복약 순응도는 자기보고라 실제보다 좋게 답했을 수 있다.</li><li>이야기할 때의 기분이 이야기 내용에 영향을 줬을 수 있다.</li></ul></div></div></section>
+<section id="glossary"><span class="kicker">용어 사전</span><h2>모르는 단어 정리</h2><dl class="gloss"><dt>혼합연구<small>mixed methods</small></dt><dd>인터뷰나 이야기 같은 질적 자료와 숫자로 된 양적 자료를 함께 쓰는 연구 방식.</dd><dt>주제 분석<small>thematic analysis</small></dt><dd>글이나 이야기에서 반복되는 주제를 찾아 분류하는 질적 분석 방법.</dd><dt>평가자 간 신뢰도<small>inter-rater reliability</small></dt><dd>여러 사람이 따로 채점해도 같은 결과가 나오는 정도. 이 연구는 Kendall tau-b 상관으로 확인.</dd><dt>항레트로바이러스 치료<small>ART</small></dt><dd>HIV 증식을 억제하는 약물 치료. 꾸준히 먹어야 효과가 유지된다.</dd><dt>복약 순응도<small>adherence</small></dt><dd>처방대로 약을 먹는 정도. 이 연구는 95% 이상을 기준으로 삼았다.</dd><dt>바이러스 부하<small>viral load</small></dt><dd>혈액 1mL 속 HIV 양. 80 copies/mL 미만이면 ‘미검출’로 봤다.</dd><dt>CES-D<small>Center for Epidemiologic Studies Depression Scale</small></dt><dd>20문항 우울 증상 설문. 점수가 높을수록 우울 증상이 많다.</dd><dt>편상관<small>partial correlation</small></dt><dd>나이, 학력 같은 다른 변수의 영향을 빼고 두 변수의 관계만 본 상관계수.</dd><dt>매개분석<small>mediation analysis</small></dt><dd>A가 B를 거쳐 C에 영향을 주는지(A → B → C) 확인하는 분석.</dd><dt>부트스트랩<small>bootstrapping</small></dt><dd>자료를 여러 번(여기선 5,000번) 다시 뽑아 결과의 신뢰구간을 추정하는 방법.</dd><dt>확장-구축 이론<small>broaden-and-build theory</small></dt><dd>긍정 정서가 생각의 폭을 넓히고 개인적, 사회적 자원을 쌓아 준다는 프레드릭슨의 이론.</dd><dt>PERMA</dt><dd>긍정 정서, 몰입, 관계, 의미, 성취. 셀리그만이 제시한 행복한 삶의 다섯 요소.</dd></dl></section>
+<section id="quiz"><span class="kicker">셀프 체크</span><h2>이해했는지 확인</h2><div class="quiz"><details><summary>긍정 요인 평균과 우울 총점의 상관 r = −.30은 무슨 뜻인가요?</summary><div class="prose"><p>긍정 요인을 많이 쓴 사람일수록 우울 점수가 낮은 <strong>중간 정도의 관계</strong>라는 뜻입니다. 원인과 결과를 뜻하지는 않습니다.</p></div></details><details><summary>긍정 요인은 긍정 정서(행복감)도 높였나요?</summary><div class="prose"><p>아니요. 긍정 정서(PA)와의 상관은 .12로 유의하지 않았습니다. 저자들은 행복감이 계속되는 스트레스나 사회적 지지에 더 좌우될 수 있다고 해석합니다.</p></div></details><details><summary>‘성취’ 주제가 바이러스 미검출과 관련된 것이 약을 잘 먹어서일까요?</summary><div class="prose"><p>논문에 따르면 아닙니다. 복약 순응도를 통제해도 관계(r = .22)가 그대로였습니다.</p></div></details><details><summary>매개분석 결과를 한 문장으로 말하면?</summary><div class="prose"><p>긍정 요인이 ‘성취’를 거쳐 우울을 낮춘다는 경로는 확인되지 않았습니다. 간접효과의 95% 신뢰구간 [−7.45, 1.76]이 0을 포함하기 때문입니다.</p></div></details></div></section>
+<section id="relevance"><span class="kicker">내 프로젝트와 연결</span><h2>내 프로젝트에 어떻게 쓸까</h2><div class="prose v-easy"><p><code>profile/my-projects.md</code> 가 아직 비어 있어서, 프로젝트별 연관도는 계산하지 못했습니다. 지금 하는 보고서나 프로젝트를 알려 주시면 이 자리에 프로젝트마다 연관도, 활용법, 인용 문장이 들어갑니다. 아래는 어떤 주제에서든 쓸 수 있는 일반적인 활용법입니다.</p></div><div class="proj"><div class="proj-head"><h3>보고서·발표 공통 활용</h3></div><div class="prose"><p>정신건강, 만성질환, 긍정심리, 질적 연구 방법 중 하나라도 다루는 과제라면 근거 자료나 방법론 예시로 쓸 수 있습니다.</p></div><div class="prose"><strong>이렇게 써먹기</strong><ul><li>서론: ‘긍정 심리 요인이 만성질환자의 우울과 관련 있다’는 근거로 인용</li><li>방법론: 인터뷰나 이야기를 코딩해 숫자로 바꾸고 신뢰도를 확인하는 절차를 참고</li><li>고찰: 상관연구의 한계(인과 불명, 다중비교)를 설명하는 예시로 활용</li></ul></div><div class="cite"><span class="cite-text">HIV와 함께 사는 여성 98명을 대상으로 한 연구에서 수용, 통찰, 마음챙김 등 긍정적 심리 요인을 더 많이 드러낸 사람일수록 우울 증상이 낮았다(Brody et al., 2021).</span><button type="button">복사</button></div></div><h3>다음에 할 일</h3><div class="prose"><ul><li><code>profile/my-projects.md</code> 에 현재 보고서나 프로젝트 주제 적기</li><li>같은 주제를 이어 읽으려면 Claude에게 “이 논문이랑 비슷한 연구 찾아줘”라고 요청</li></ul></div></section>
+<footer><p>출처: PubMed에서 가져온 논문 정보를 바탕으로 정리했습니다. 원문: <a href="https://doi.org/10.1007/s12529-021-10032-y" target="_blank" rel="noopener">https://doi.org/10.1007/s12529-021-10032-y</a></p><p>본문과 수치는 PubMed(PMC 전문)에서 가져왔습니다. 이 예시를 만든 환경에서는 그림 서버 접속이 막혀 원본 그림과 표 대신 본문 수치로 그래프를 다시 그렸습니다.</p><p>이 리포트는 학습용 요약입니다. 인용할 때는 반드시 원문을 확인하세요.</p></footer>
+  </main>
+</div>
+
+<dialog class="lightbox" id="lightbox" aria-label="그림 크게 보기">
+  <div class="lb-inner"><img id="lb-img" alt=""></div>
+  <button type="button" class="lb-close" id="lb-close">닫기</button>
+</dialog>
+
+<script>
+(function () {
+  var body = document.body, easy = document.getElementById('mode-easy'), det = document.getElementById('mode-detail');
+  function setMode(d) {
+    body.classList.toggle('detail', d);
+    easy.setAttribute('aria-pressed', String(!d));
+    det.setAttribute('aria-pressed', String(d));
+    try { localStorage.setItem('paper-reader-mode', d ? 'detail' : 'easy'); } catch (e) {}
+  }
+  easy.addEventListener('click', function () { setMode(false); });
+  det.addEventListener('click', function () { setMode(true); });
+  try { if (localStorage.getItem('paper-reader-mode') === 'detail') setMode(true); } catch (e) {}
+
+  var lb = document.getElementById('lightbox'), lbImg = document.getElementById('lb-img');
+  document.querySelectorAll('.fig-zoom').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var img = b.querySelector('img');
+      lbImg.src = img.src; lbImg.alt = img.alt;
+      if (lb.showModal) lb.showModal();
+    });
+  });
+  document.getElementById('lb-close').addEventListener('click', function () { lb.close(); });
+  lb.addEventListener('click', function (e) { if (e.target !== lbImg) lb.close(); });
+
+  document.querySelectorAll('.cite button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = b.parentNode.querySelector('.cite-text');
+      var done = function () { b.textContent = '복사됨'; setTimeout(function () { b.textContent = '복사'; }, 1600); };
+      var fallback = function () { var r = document.createRange(); r.selectNodeContents(t); var s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = '선택됨'; };
+      try { navigator.clipboard.writeText(t.innerText).then(done, fallback); } catch (e) { fallback(); }
+    });
+  });
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var secs = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+  function spy() {
+    var y = window.scrollY + 120, cur = 0;
+    secs.forEach(function (s, i) { if (s && s.offsetTop <= y) cur = i; });
+    links.forEach(function (a, i) { a.classList.toggle('on', i === cur); });
+    var on = links[cur];
+    if (on && on.parentNode.parentNode.scrollWidth > on.parentNode.parentNode.clientWidth) {
+      var toc = on.parentNode.parentNode, l = on.offsetLeft - toc.offsetLeft;
+      if (l < toc.scrollLeft || l > toc.scrollLeft + toc.clientWidth - 60) toc.scrollLeft = l - 20;
+    }
+  }
+  window.addEventListener('scroll', spy, { passive: true });
+  spy();
+})();
+</script>
