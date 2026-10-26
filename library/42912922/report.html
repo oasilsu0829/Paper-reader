@@ -1,0 +1,351 @@
+<meta charset="utf-8">
+<title>GDEE 효소 공학 플랫폼</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 학생의 논문 리딩 노트. 왼쪽 목차 레일 + 72ch 본문 칼럼, 형광펜은 핵심 문장에만 쓴다. */
+:root {
+  --paper: #f5f7f6;
+  --surface: #ffffff;
+  --ink: #18212b;
+  --ink-2: #4f5b67;
+  --rule: #d8dfe2;
+  --accent: #2148c9;
+  --accent-soft: #e6ecfb;
+  --marker-bg: #f4e65c;
+  --marker-fg: #18212b;
+  --good: #1c7a4e;
+  --warn: #a8530f;
+  --warn-soft: #fbefe3;
+  --bar-muted: #b7c2cc;
+  --font-display: "Hahmlet", "Noto Serif KR", "AppleMyungjo", Georgia, serif;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.1875rem;
+  --step-2: 1.5rem;
+  --step-3: 2.125rem;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1417; --surface: #161d22; --ink: #e5eaee; --ink-2: #9ba8b4; --rule: #29333b;
+    --accent: #85a5ff; --accent-soft: #1b2645; --marker-bg: #5c5416; --marker-fg: #fff6b8;
+    --good: #5cc795; --warn: #f0a160; --warn-soft: #33241a; --bar-muted: #4a5763;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1417; --surface: #161d22; --ink: #e5eaee; --ink-2: #9ba8b4; --rule: #29333b;
+  --accent: #85a5ff; --accent-soft: #1b2645; --marker-bg: #5c5416; --marker-fg: #fff6b8;
+  --good: #5cc795; --warn: #f0a160; --warn-soft: #33241a; --bar-muted: #4a5763;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--font-body); font-size: var(--step-0); line-height: 1.75;
+  word-break: keep-all; overflow-wrap: anywhere;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, summary:focus-visible, .fig-zoom:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+mark { background: linear-gradient(transparent 12%, var(--marker-bg) 12%, var(--marker-bg) 88%, transparent 88%); color: var(--marker-fg); padding: 0 .15em; }
+code { font-family: var(--font-mono); font-size: .9em; background: var(--accent-soft); padding: .05em .35em; border-radius: 3px; }
+
+.shell { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 48px; padding-block: 40px 96px; }
+main { min-width: 0; max-width: 72ch; }
+
+/* ---------- 목차 레일 */
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; display: grid; gap: 20px; font-size: var(--step--1); }
+.rail-label { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.toc { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; border-left: 1px solid var(--rule); }
+.toc a { display: block; padding: 4px 0 4px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--ink-2); text-decoration: none; }
+.toc a:hover { color: var(--ink); }
+.toc a.on { color: var(--ink); border-left-color: var(--accent); font-weight: 600; }
+.mode { display: inline-grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
+.mode button { font: inherit; font-size: var(--step--1); border: 0; background: transparent; color: var(--ink-2); padding: 6px 12px; cursor: pointer; }
+.mode button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.mode-hint { color: var(--ink-2); margin: 6px 0 0; line-height: 1.5; }
+
+/* ---------- 머리말 */
+.eyebrow { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 6px 14px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: var(--step-3); line-height: 1.3; margin: 14px 0 10px; text-wrap: balance; letter-spacing: -0.01em; }
+.orig-title { color: var(--ink-2); font-size: var(--step-0); margin: 0 0 16px; line-height: 1.55; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--ink-2); font-size: var(--step--1); margin: 0 0 6px; }
+.meta b { color: var(--ink); font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; }
+.chip { font-family: var(--font-mono); font-size: .72rem; border: 1px solid var(--rule); border-radius: 99px; padding: 2px 10px; color: var(--ink-2); background: var(--surface); }
+.tldr { margin: 28px 0 0; font-family: var(--font-display); font-weight: 500; font-size: var(--step-1); line-height: 1.75; }
+.tldr .rail-label { display: block; margin-bottom: 6px; font-family: var(--font-mono); }
+
+/* ---------- 섹션 */
+section { padding-top: 56px; scroll-margin-top: 16px; }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: var(--step-2); line-height: 1.35; margin: 0 0 4px; text-wrap: balance; }
+.kicker { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h3 { font-size: var(--step-1); font-weight: 600; margin: 28px 0 8px; text-wrap: balance; line-height: 1.45; }
+.prose p { margin: 12px 0; }
+.prose ul, .prose ol { padding-left: 1.3em; margin: 10px 0; }
+.prose li { margin: 4px 0; }
+.prose li::marker { color: var(--ink-2); }
+.v-detail { display: none; }
+body.detail .v-detail { display: block; }
+.v-detail { border-left: 2px solid var(--accent-soft); padding-left: 14px; margin: 12px 0; }
+.v-detail > .rail-label { color: var(--accent); }
+
+.points { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 10px; counter-reset: pt; }
+.points li { counter-increment: pt; display: grid; grid-template-columns: 2.2em minmax(0, 1fr); align-items: baseline; }
+.points li::before { content: counter(pt); font-family: var(--font-mono); font-size: .8rem; color: var(--accent); }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin: 20px 0; }
+.stat { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 2px; align-content: start; }
+.stat-v { font-family: var(--font-display); font-weight: 700; font-size: var(--step-2); line-height: 1.2; font-variant-numeric: tabular-nums; }
+.stat-l { font-size: var(--step--1); font-weight: 600; }
+.stat-n { font-size: .78rem; color: var(--ink-2); line-height: 1.5; }
+
+.callout { margin: 18px 0; padding: 12px 16px; border-radius: var(--radius); background: var(--accent-soft); font-size: .95rem; }
+.callout.warn { background: var(--warn-soft); }
+.callout-t { font-weight: 600; display: block; margin-bottom: 2px; }
+.callout p { margin: 4px 0; }
+
+.flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; margin: 20px 0; }
+.flow-step { flex: 1 1 150px; min-width: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px 14px; }
+.flow-step b { display: block; font-size: .95rem; }
+.flow-step span { display: block; font-size: var(--step--1); color: var(--ink-2); line-height: 1.55; margin-top: 2px; }
+.flow-arrow { flex: 0 0 auto; align-self: center; display: grid; justify-items: center; padding: 0 6px; color: var(--ink-2); font-size: .72rem; font-family: var(--font-mono); max-width: 90px; text-align: center; line-height: 1.3; }
+.flow-arrow::before { content: "→"; font-size: 1.1rem; color: var(--accent); }
+.flow.vertical { flex-direction: column; }
+.flow.vertical .flow-step { flex: 0 0 auto; display: grid; grid-template-columns: minmax(0, 10em) minmax(0, 1fr); gap: 4px 14px; align-items: baseline; padding: 10px 14px; }
+.flow.vertical .flow-step span { margin: 0; }
+.flow.vertical .flow-arrow { max-width: none; padding: 2px 0; grid-auto-flow: column; gap: 8px; align-items: center; justify-content: start; margin-left: 2em; }
+.flow.vertical .flow-arrow::before { content: "↓"; }
+@media (max-width: 520px) { .flow.vertical .flow-step { grid-template-columns: minmax(0, 1fr); } }
+.flow-cap, .chart-cap { font-size: var(--step--1); color: var(--ink-2); margin: 6px 0 0; }
+
+.chart { margin: 22px 0; }
+.chart-t { font-weight: 600; font-size: .95rem; margin: 0 0 6px; }
+.chart-scroll { overflow-x: auto; }
+.chart svg { display: block; width: 100%; min-width: 420px; height: auto; }
+.chart .lbl { fill: var(--ink); font-family: var(--font-body); font-size: 13px; }
+.chart .val { fill: var(--ink-2); font-family: var(--font-mono); font-size: 12px; }
+.chart .tick { fill: var(--ink-2); font-family: var(--font-mono); font-size: 11px; }
+.chart .grid { stroke: var(--rule); stroke-width: 1; }
+.chart .zero { stroke: var(--ink-2); stroke-width: 1; }
+.chart .bar { fill: var(--accent); }
+.chart .bar.muted { fill: var(--bar-muted); }
+.chart .bar.warn { fill: var(--warn); }
+.chart .bar.good { fill: var(--good); }
+
+.tbl-wrap { overflow-x: auto; margin: 18px 0; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: var(--step--1); font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; background: var(--paper); }
+tr:last-child td { border-bottom: 0; }
+
+.compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 18px 0; }
+.compare > div { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px 16px; min-width: 0; }
+.compare h4 { margin: 0 0 4px; font-size: .95rem; }
+.compare ul { margin: 0; padding-left: 1.2em; font-size: .95rem; }
+
+pre.mermaid { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px; overflow-x: auto; font-size: var(--step--1); }
+
+/* ---------- 그림 */
+.fig { margin: 28px 0 0; padding-top: 24px; border-top: 1px solid var(--rule); scroll-margin-top: 16px; }
+.fig-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.fig-label { font-family: var(--font-mono); font-size: .8rem; color: var(--accent); }
+.fig h3 { margin: 0; flex: 1 1 260px; }
+.fig-zoom { display: block; width: 100%; margin: 14px 0 0; padding: 10px; border: 1px solid var(--rule); border-radius: var(--radius); background: #fff; cursor: zoom-in; }
+.fig-zoom img { display: block; margin: 0 auto; max-height: 520px; width: auto; max-width: 100%; }
+.fig-zoom-hint { font-size: .75rem; color: var(--ink-2); margin: 4px 0 0; text-align: right; }
+.fig-missing { margin: 14px 0 0; padding: 14px 16px; border: 1px dashed var(--rule); border-radius: var(--radius); color: var(--ink-2); font-size: var(--step--1); }
+.fig-grid { display: grid; gap: 4px; margin-top: 10px; }
+.fig-grid h4 { font-size: var(--step--1); letter-spacing: .04em; color: var(--ink-2); margin: 14px 0 0; font-weight: 600; }
+details { margin: 14px 0 0; }
+summary { cursor: pointer; color: var(--ink-2); font-size: var(--step--1); }
+details[open] summary { margin-bottom: 6px; }
+.orig { font-size: var(--step--1); color: var(--ink-2); line-height: 1.65; }
+
+dialog.lightbox { border: 0; padding: 0; background: transparent; max-width: 100vw; max-height: 100vh; width: 100vw; height: 100vh; }
+dialog.lightbox::backdrop { background: rgba(10, 14, 18, .86); }
+.lb-inner { width: 100%; height: 100%; display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); overflow: auto; }
+.lb-inner img { max-width: 100%; max-height: calc(100vh - 80px); background: #fff; border-radius: 4px; }
+.lb-close { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 12px); right: calc(env(safe-area-inset-right, 0px) + 12px); font: inherit; background: #fff; color: #18212b; border: 0; border-radius: 99px; padding: 6px 14px; cursor: pointer; }
+
+/* ---------- 용어, 퀴즈 */
+.gloss { display: grid; grid-template-columns: minmax(0, 11em) minmax(0, 1fr); gap: 0; margin: 18px 0; border-top: 1px solid var(--rule); }
+.gloss dt, .gloss dd { margin: 0; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+.gloss dt { font-weight: 600; padding-right: 14px; }
+.gloss dt small { display: block; font-weight: 400; font-family: var(--font-mono); font-size: .72rem; color: var(--ink-2); }
+.gloss dd { font-size: .95rem; }
+.quiz details { border-bottom: 1px solid var(--rule); padding: 10px 0; margin: 0; }
+.quiz summary { color: var(--ink); font-size: var(--step-0); font-weight: 600; }
+.quiz details p { margin: 6px 0 0; }
+
+/* ---------- 내 프로젝트 연관성 */
+.proj { margin: 18px 0; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 16px 18px; }
+.proj-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; }
+.proj h3 { margin: 0; }
+.fit { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: .75rem; color: var(--ink-2); }
+.fit i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--rule); }
+.fit i.on { background: var(--accent); }
+.cite { margin: 12px 0 0; padding: 10px 12px; border-left: 3px solid var(--marker-bg); background: var(--paper); font-size: .95rem; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: start; }
+.cite button { font: inherit; font-size: .75rem; border: 1px solid var(--rule); background: var(--surface); color: var(--ink-2); border-radius: 4px; padding: 3px 10px; cursor: pointer; }
+
+footer { margin-top: 72px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: var(--step--1); color: var(--ink-2); }
+footer p { margin: 6px 0; }
+
+@media (max-width: 920px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; padding-block: 0 72px; }
+  main { max-width: none; }
+  .rail { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); padding-block: 10px; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; margin-bottom: 24px; }
+  .rail > .rail-label, .mode-hint { display: none; }
+  .toc { display: flex; overflow-x: auto; border-left: 0; gap: 4px; scrollbar-width: none; }
+  .toc a { white-space: nowrap; border-left: 0; border-bottom: 2px solid transparent; padding: 4px 8px; margin: 0; }
+  .toc a.on { border-bottom-color: var(--accent); }
+  .mode-box { order: 2; }
+  section { scroll-margin-top: 64px; }
+  .gloss { grid-template-columns: minmax(0, 1fr); }
+  .gloss dd { padding-top: 0; }
+  .gloss dt { border-bottom: 0; padding-bottom: 2px; }
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="shell">
+  <nav class="rail" aria-label="목차">
+    <div class="mode-box">
+      <div class="mode" role="group" aria-label="설명 수준">
+        <button type="button" id="mode-easy" aria-pressed="true">쉽게</button>
+        <button type="button" id="mode-detail" aria-pressed="false">자세히</button>
+      </div>
+      <p class="mode-hint">쉽게: 비유와 핵심만<br>자세히: 수치와 통계 설명을 더 보여줌</p>
+    </div>
+    <span class="rail-label">목차</span>
+    <ol class="toc"><li><a href="#overview">한눈에 보기</a></li><li><a href="#abstract">초록을 쉽게 풀면</a></li><li><a href="#background">왜 이 연구를 했나</a></li><li><a href="#methods">플랫폼은 어떻게 돌아가나</a></li><li><a href="#results">무엇을 찾았나</a></li><li><a href="#discussion">저자들의 해석과 결론</a></li><li><a href="#figures">그림과 표 읽기</a></li><li><a href="#critique">얼마나 믿을 수 있나</a></li><li><a href="#glossary">모르는 단어 정리</a></li><li><a href="#quiz">이해했는지 확인</a></li><li><a href="#relevance">내 프로젝트에 어떻게 쓸까</a></li></ol>
+  </nav>
+  <main>
+<header><div class="eyebrow"><span>논문 리딩 노트</span><span>2026-10-26</span><span>PMID 42912922</span></div><h1>GDEE: 구조 기반으로 효소를 찾고 개량하는 자동화 플랫폼</h1><p class="orig-title" lang="en">GDEE: A Structure-Based Platform for Gene Discovery and Enzyme Engineering</p><p class="meta"><span><b>Caio S Souza, João P G Correia, Isabel Rocha 외 2명</b></span><span>Journal of Chemical Information and Modeling · 2026</span><span><a href="https://pubmed.ncbi.nlm.nih.gov/42912922/" target="_blank" rel="noopener">PubMed</a></span><span><a href="https://doi.org/10.1021/acs.jcim.5c02688" target="_blank" rel="noopener">DOI 10.1021/acs.jcim.5c02688</a></span></p><div class="chips"><span class="chip">계산 생물학</span><span class="chip">소프트웨어 플랫폼</span><span class="chip">분자 도킹</span><span class="chip">머신러닝 재채점</span><span class="chip">벤치마크 260쌍</span></div><p class="tldr"><span class="rail-label">한 줄 요약</span><mark>효소 돌연변이 수천 개를 컴퓨터로 만들어 ‘기질에 더 잘 붙을 것 같은’ 후보를 골라 주는 파이프라인을 공개했다. 머신러닝 재채점이 결합 세기 예측을 개선했지만, <mark>전체 파이프라인에서 돌연변이 효과(좋아짐/나빠짐)를 맞힌 비율은 약 54%로 동전 던지기보다 조금 나은 수준</mark>이라 실험 전 후보 줄이기 도구로 써야 한다.</mark></p></header>
+<section id="overview"><span class="kicker">1분 요약</span><h2>한눈에 보기</h2><ol class="points"><li><span>GDEE는 서열 만들기 → 3D 구조 예측 → 도킹 → 결합 에너지 평가의 4단계를 자동으로 돌리는 파이썬 플랫폼이다. 돌연변이를 설계하는 ‘효소 공학’과 자연 효소를 고르는 ‘유전자 발굴’을 모두 지원한다.</span></li><li><span>실제 촉매 효율(kcat/Km)을 계산하는 대신 <strong>결합 친화도를 대리 지표</strong>로 쓴다. 저자들도 결합이 좋아진다고 촉매가 좋아지는 건 아니라고 분명히 말한다.</span></li><li><span>결합 자세(포즈)를 찾는 데는 AutoDock Vina가 가장 정확했고(54%), 결합 세기 예측은 머신러닝 점수 함수(특히 RF-Score v2)가 더 나았다.</span></li><li><span>그래서 결론은 <mark>Vina로 포즈를 찾고, 머신러닝으로 다시 채점하라</mark>는 조합이다. 5개 모델을 합친 스태킹 메타모델을 기본 재채점기로 넣었다.</span></li><li><span>그러나 구조 예측부터 도킹까지 전부 거치면 오차가 쌓여, 돌연변이 효과의 부호를 맞힌 최고 성적이 약 54%에 그쳤다.</span></li></ol><div class="stats"><div class="stat"><span class="stat-v">4단계</span><span class="stat-l">파이프라인</span><span class="stat-n">서열 → 구조 → 도킹 → 평가</span></div><div class="stat"><span class="stat-v">8개</span><span class="stat-l">파이썬 모듈</span><span class="stat-n">SQLite 테이블 7개에 결과 저장</span></div><div class="stat"><span class="stat-v">4,482</span><span class="stat-l">단백질-리간드 복합체</span><span class="stat-n">PDBBind v2020 refined set</span></div><div class="stat"><span class="stat-v">260쌍</span><span class="stat-l">야생형-변이체 쌍</span><span class="stat-n">기준 단백질 187개</span></div><div class="stat"><span class="stat-v">≈54%</span><span class="stat-l">전체 파이프라인 최고 성적</span><span class="stat-n">RF-Score v1, 돌연변이 효과 부호 예측</span></div></div></section>
+<section id="abstract"><span class="kicker">초록</span><h2>초록을 쉽게 풀면</h2><div class="prose v-easy"><p>효소는 약, 연료, 식품 원료 같은 물질을 만드는 ‘생체 공장의 기계’입니다. 그런데 기계 하나가 느리면 공장 전체가 느려집니다(율속 단계). 이 느린 기계를 고치는 것이 <strong>효소 공학</strong>입니다.</p>
+<p>문제는 고칠 수 있는 방법이 너무 많다는 점입니다. 아미노산 몇 자리만 바꿔도 조합이 수천, 수만 개가 됩니다. 전부 실험할 수는 없으니, 연구팀은 컴퓨터로 먼저 걸러 주는 <strong>GDEE 플랫폼</strong>을 만들었습니다.</p>
+<p>비유하면, 열쇠(기질)에 더 잘 맞는 자물쇠(효소)를 찾으려고 자물쇠 수천 개를 3D로 그려 보고, 열쇠를 꽂아 보는 시뮬레이션을 자동으로 돌리는 프로그램입니다. 여기에 머신러닝으로 ‘얼마나 잘 맞는지’ 점수를 다시 매기는 기능을 더했습니다.</p></div><div class="prose v-detail"><span class="rail-label">자세히</span><ul><li><strong>4단계</strong>: (1) 서열 단계: 자연 효소 서열을 가져오거나 돌연변이 변이체를 생성 (2) 원자 수준 단백질 구조 예측 (3) 도킹 (4) 결합 에너지 평가. 결과는 실험 검증 우선순위가 매겨진 변이체 목록.</li><li>초록은 머신러닝 재채점이 돌연변이 효과 예측 정확도를 ‘significantly’ 높인다고 쓰지만, 본문을 보면 개선 폭은 단독 점수 평가에서 크고(RF-Score v2 72%) 전체 파이프라인에서는 작다(최고 약 54%). 본문 쪽 표현이 더 신중하다.</li></ul></div></section>
+<section id="background"><span class="kicker">배경</span><h2>왜 이 연구를 했나</h2><div class="prose v-easy"><p>미생물로 물질을 만들 때 효율이 낮은 이유는 여러 가지입니다. 효소가 적게 만들어지거나, 일을 느리게 하거나, 기질이 부족하거나, 결과물이 독성이 있는 경우 등입니다.</p>
+<p>효소 양을 늘리는 방법(유전자 발현 강화)이 가장 흔하지만, <strong>기질에 잘 붙지 못하는 효소는 아무리 많이 만들어도 소용없습니다.</strong> 그래서 효소 자체를 다시 설계해야 합니다.</p>
+<p>컴퓨터로 효소를 설계하는 방법은 정확하지만 느린 것부터 빠르지만 대략적인 것까지 다양합니다. 수천 개 후보를 빠르게 비교하려면 빠른 방법(도킹)을 자동으로 돌리는 도구가 필요했고, 그것이 이 연구의 출발점입니다.</p></div><div class="prose v-detail"><span class="rail-label">자세히</span><ul><li>촉매 효율은 <strong>kcat/Km</strong>으로 나타낸다. kcat(턴오버 수)을 높이거나 Km(겉보기 미카엘리스 상수)을 낮추면 좋아진다. 기질 인식이나 활성 부위 적합도를 높이는 돌연변이는 Km을 낮출 수 있다.</li><li>계산 방법의 스펙트럼: 양자역학(QM)·QM/MM은 반응 메커니즘과 활성화 장벽까지 보지만 고처리량에는 너무 무겁다. 분자역학(MM) 기반 자유에너지 계산과 메타다이내믹스도 무겁다. 분자 도킹은 단백질을 단단한 물체로 보고 용매를 명시하지 않는 등 근사가 많아 빠르다.</li><li>기존 도구(Rosetta, FoldX, DynaMut)는 돌연변이의 안정성이나 상호작용을 평가하지만, 대규모 변이체 우선순위 매기기에는 자동화, 도킹 통합, 작업 흐름 표준화가 더 필요하다고 저자들은 본다.</li></ul></div></section>
+<section id="methods"><span class="kicker">방법</span><h2>플랫폼은 어떻게 돌아가나</h2><div class="prose v-easy"><p>사용자는 <strong>기준 효소의 3D 구조</strong>와 <strong>리간드(기질 등)의 구조</strong>만 넣으면 됩니다. 그다음은 플랫폼이 알아서 합니다.</p>
+<p>중간에 ‘품질 검사’가 있다는 점이 중요합니다. 3D 구조를 만들 때 필요한 수의 3배를 만든 뒤, 엉터리 구조는 버리고 좋은 것만 도킹으로 보냅니다. 시간이 오래 걸리는 단계 앞에 거름망을 둔 셈입니다.</p></div><div class="prose v-detail"><span class="rail-label">자세히</span><ul><li><strong>서열 생성</strong>: 효소 공학 모드는 사용자가 고른 자리의 돌연변이를 치환 행렬 점수로 샘플링(보존적/비보존적/무작위)하거나 모든 조합을 만든다. 유전자 발굴 모드는 BLAST로 미리 고른 자연 서열을 FASTA로 받는다. 두 모드는 이 단계만 다르다.</li><li><strong>구조 모델링</strong>: Modeller로 상동성 모델을 만든다. 돌연변이 주변 반경(Å) 안의 곁사슬만 최적화하고 주사슬은 고정. 최적화 수준 0/1/2는 목적함수 평가를 최대 100/200/300회 한다.</li><li><strong>품질 평가</strong>: VoroMQA와 Modeller의 normalized DOPE로 모델을 채택/거부. 큰 결함은 잡지만 미세한 결함은 놓쳐서 수작업 검토가 여전히 필요하다.</li><li><strong>도킹</strong>: AutoDock Vina 또는 Smina, 점수 함수는 Vina 또는 Vinardo. 단백질은 계속 단단한 물체로 취급. 박스 크기와 중심은 사용자가 지정.</li><li><strong>필터링</strong>: 리간드와 효소 원자 사이 거리 조건으로 ‘촉매에 맞는 자세’만 남기고, 그중 결합 친화도가 가장 좋은 포즈를 고른다.</li><li><strong>권장 설정</strong>: 변이체당 모델 5개, exhaustiveness 100 이상. 정확도와 계산 비용의 절충점.</li><li><strong>병렬화</strong>: MPI4Py로 분산 계산. 모든 결과는 SQLite에 저장.</li></ul></div><p class="chart-t">GDEE 파이프라인</p><div class="flow vertical"><div class="flow-step"><b>입력</b><span>기준 효소 구조(PDB) + 리간드 구조(PDBQT)</span></div><div class="flow-arrow" aria-hidden="true"></div><div class="flow-step"><b>서열 생성</b><span>돌연변이 조합 생성 또는 자연 서열(FASTA)</span></div><div class="flow-arrow" aria-hidden="true"></div><div class="flow-step"><b>3D 구조 예측</b><span>Modeller 상동성 모델, 필요 수의 3배 생성</span></div><div class="flow-arrow" aria-hidden="true"></div><div class="flow-step"><b>품질 검사</b><span>VoroMQA, DOPE로 나쁜 모델 제거</span></div><div class="flow-arrow" aria-hidden="true"></div><div class="flow-step"><b>도킹</b><span>Vina/Smina, 단백질은 단단하다고 가정</span></div><div class="flow-arrow" aria-hidden="true"></div><div class="flow-step"><b>필터·순위</b><span>원자 간 거리로 포즈 거르고 결합 에너지로 정렬</span></div><div class="flow-arrow" aria-hidden="true"></div><div class="flow-step"><b>(선택) ML 재채점</b><span>스태킹 메타모델 등으로 점수 다시 매김</span></div></div><p class="flow-cap">결과는 실험해 볼 변이체 후보의 우선순위 목록이다.</p>
+<p class="chart-t">구조 최적화 수준</p><div class="tbl-wrap"><table><thead><tr><th>수준</th><th>방식</th><th>목적함수 평가 최대</th></tr></thead><tbody><tr><td>0</td><td>빠른 최적화 + 짧은 MD</td><td>100회</td></tr><tr><td>1</td><td>표준 최적화 + 느린 MD</td><td>200회</td></tr><tr><td>2</td><td>광범위한 최적화</td><td>300회</td></tr></tbody></table></div></section>
+<section id="results"><span class="kicker">결과</span><h2>무엇을 찾았나</h2><div class="prose v-easy"><p>연구팀은 플랫폼의 핵심인 <strong>점수 함수</strong>(얼마나 잘 붙는지 점수를 매기는 공식)를 고르려고 세 단계로 시험했습니다.</p>
+<p><strong>1. 정답 구조로 시험</strong> (4,482개 복합체)<br>결합 세기 예측은 머신러닝 점수 함수가 낫고, 결합 자세 찾기는 고전 함수(Vina)가 훨씬 나았습니다. 머신러닝은 ‘맞는 자세’만 보고 배워서 ‘틀린 자세’를 구별하지 못하는 것으로 보입니다.</p>
+<p><strong>2. 돌연변이 효과 맞히기</strong> (260쌍)<br>돌연변이가 결합을 좋게 했는지 나쁘게 했는지만 맞히는 시험입니다. 찍어도 50%인 시험인데, 고전 함수는 약 50%였고 RF-Score v2는 정답 구조에서 72%까지 올라갔습니다.</p>
+<p><strong>3. 플랫폼 전체로 시험</strong><br>구조를 직접 예측하고 도킹까지 한 뒤 맞히게 하니, 가장 좋은 함수도 약 54%였습니다. 단계마다 생긴 작은 오차가 쌓였기 때문입니다.</p></div><div class="prose v-detail"><span class="rail-label">자세히</span><ul><li><strong>도킹 정밀도</strong>(결정 구조에서 2 Å 이내 포즈를 찾은 비율): Vina 54%, Smina·Vinardo·AD4 약 45%, ML 모델 2~17%.</li><li><strong>점수 정밀도</strong>: Vina, Smina, Vinardo, AD4는 비슷했고, ML 중에서는 RF-Score v2가 가장 좋고 PLEC 계열은 나빴다.</li><li><strong>ΔΔG 부호 예측(260쌍)</strong>: 고전 함수 약 50%(X-ray, 도킹 후 모두). RF-Score v2는 X-ray 72%로 다른 모델의 오차 범위를 확실히 넘은 유일한 ML 함수였지만, 도킹 후 55%로 떨어졌다. NNScore는 두 조건 모두 약 60%였지만 오차 범위 안.</li><li>대부분의 ΔΔG는 매우 작다. 야생형과 변이체의 ΔG가 비슷해서 Vina의 오차 범위 안에 들어가는 경우가 많다.</li><li><strong>스태킹 메타모델</strong>: 데이터 누수를 줄인 PDBBind 2020 leak-proof 분할로 개발. 선형회귀로 5개 기본 모델을 결합. R²는 모든 단독 함수보다 높았지만 MSE는 RF-Score v2의 오차 범위 안. 돌연변이 부호 예측은 X-ray 71%, 도킹 후 55%로 RF-Score v2와 비슷.</li><li><strong>전체 파이프라인</strong>: 기준 단백질 187개로 변이체를 생성해 재채점. RF-Score v1이 약 54%로 가장 높았다. 저자들은 이것이 무작위 기준보다 ‘조금’ 높을 뿐이며 개별 돌연변이의 성공/실패 예측 근거로 해석하면 안 된다고 명시한다.</li></ul></div><figure class="chart"><p class="chart-t">도킹 정밀도: 실제 결합 자세(2 Å 이내)를 찾은 비율</p><div class="chart-scroll"><svg viewBox="0 0 640 182" role="img" aria-label="도킹 정밀도: 실제 결합 자세(2 Å 이내)를 찾은 비율"><line class="grid" x1="128.2" x2="128.2" y1="6" y2="160"/><text class="tick" x="128.2" y="176" text-anchor="middle">0</text><line class="grid" x1="277.5" x2="277.5" y1="6" y2="160"/><text class="tick" x="277.5" y="176" text-anchor="middle">20</text><line class="grid" x1="426.7" x2="426.7" y1="6" y2="160"/><text class="tick" x="426.7" y="176" text-anchor="middle">40</text><line class="grid" x1="576.0" x2="576.0" y1="6" y2="160"/><text class="tick" x="576.0" y="176" text-anchor="middle">60</text><g><title>Vina: 54%</title><text class="lbl" x="118.23999999999998" y="25.5" text-anchor="end">Vina</text><rect class="bar " x="128.2" y="12" width="403.0" height="18" rx="2"/><text class="val" x="584" y="25.5">54%</text></g><g><title>Smina: 45%</title><text class="lbl" x="118.23999999999998" y="55.5" text-anchor="end">Smina</text><rect class="bar muted" x="128.2" y="42" width="335.8" height="18" rx="2"/><text class="val" x="584" y="55.5">≈45%</text></g><g><title>Vinardo: 45%</title><text class="lbl" x="118.23999999999998" y="85.5" text-anchor="end">Vinardo</text><rect class="bar muted" x="128.2" y="72" width="335.8" height="18" rx="2"/><text class="val" x="584" y="85.5">≈45%</text></g><g><title>AD4: 45%</title><text class="lbl" x="118.23999999999998" y="115.5" text-anchor="end">AD4</text><rect class="bar muted" x="128.2" y="102" width="335.8" height="18" rx="2"/><text class="val" x="584" y="115.5">≈45%</text></g><g><title>ML 모델 (최고치): 17%</title><text class="lbl" x="118.23999999999998" y="145.5" text-anchor="end">ML 모델 (최고치)</text><rect class="bar warn" x="128.2" y="132" width="126.9" height="18" rx="2"/><text class="val" x="584" y="145.5">2~17%</text></g></svg></div><p class="chart-cap">본문 수치로 다시 그림. ML 모델은 범위(2~17%)만 보고되어 최고치로 표시했다.</p></figure>
+<figure class="chart"><p class="chart-t">돌연변이 효과의 부호를 맞힌 비율, 시험 조건별</p><div class="chart-scroll"><svg viewBox="0 0 640 212" role="img" aria-label="돌연변이 효과의 부호를 맞힌 비율, 시험 조건별"><line class="grid" x1="222.1" x2="222.1" y1="6" y2="190"/><text class="tick" x="222.1" y="206" text-anchor="middle">0</text><line class="grid" x1="310.6" x2="310.6" y1="6" y2="190"/><text class="tick" x="310.6" y="206" text-anchor="middle">20</text><line class="grid" x1="399.0" x2="399.0" y1="6" y2="190"/><text class="tick" x="399.0" y="206" text-anchor="middle">40</text><line class="grid" x1="487.5" x2="487.5" y1="6" y2="190"/><text class="tick" x="487.5" y="206" text-anchor="middle">60</text><line class="grid" x1="576.0" x2="576.0" y1="6" y2="190"/><text class="tick" x="576.0" y="206" text-anchor="middle">80</text><g><title>찍어서 맞힐 확률: 50%</title><text class="lbl" x="212.1" y="25.5" text-anchor="end">찍어서 맞힐 확률</text><rect class="bar muted" x="222.1" y="12" width="221.2" height="18" rx="2"/><text class="val" x="584" y="25.5">50%</text></g><g><title>RF-Score v2 · 정답 구조: 72%</title><text class="lbl" x="212.1" y="55.5" text-anchor="end">RF-Score v2 · 정답 구조</text><rect class="bar " x="222.1" y="42" width="318.5" height="18" rx="2"/><text class="val" x="584" y="55.5">≈72%</text></g><g><title>메타모델 · 정답 구조: 71%</title><text class="lbl" x="212.1" y="85.5" text-anchor="end">메타모델 · 정답 구조</text><rect class="bar " x="222.1" y="72" width="314.1" height="18" rx="2"/><text class="val" x="584" y="85.5">71%</text></g><g><title>RF-Score v2 · 도킹 후: 55%</title><text class="lbl" x="212.1" y="115.5" text-anchor="end">RF-Score v2 · 도킹 후</text><rect class="bar muted" x="222.1" y="102" width="243.3" height="18" rx="2"/><text class="val" x="584" y="115.5">55%</text></g><g><title>메타모델 · 도킹 후: 55%</title><text class="lbl" x="212.1" y="145.5" text-anchor="end">메타모델 · 도킹 후</text><rect class="bar muted" x="222.1" y="132" width="243.3" height="18" rx="2"/><text class="val" x="584" y="145.5">55%</text></g><g><title>RF-Score v1 · 전체 파이프라인: 54%</title><text class="lbl" x="212.1" y="175.5" text-anchor="end">RF-Score v1 · 전체 파이프라인</text><rect class="bar warn" x="222.1" y="162" width="238.9" height="18" rx="2"/><text class="val" x="584" y="175.5">≈54%</text></g></svg></div><p class="chart-cap">본문 수치로 다시 그림. 아래로 갈수록 실제 사용 조건에 가깝고, 성적이 50% 쪽으로 내려온다.</p></figure>
+<div class="callout "><span class="callout-t">왜 전체 파이프라인에서 성적이 떨어질까</span><p>1단계 시험은 실험으로 얻은 ‘정답 구조’에 점수만 매기게 한 것입니다. 실제 플랫폼은 리간드 없이 예측한 구조에, 단단한 단백질 가정으로 도킹하고, 포즈를 고른 뒤 채점합니다. 단계마다 생긴 작은 구조 오차가 최종 점수로 번집니다. 게다가 ML 함수는 실험 구조로 학습해서 예측 구조에는 익숙하지 않습니다.</p></div></section>
+<section id="discussion"><span class="kicker">고찰</span><h2>저자들의 해석과 결론</h2><div class="prose v-easy"><p>저자들은 GDEE를 ‘정답을 알려 주는 예언기’가 아니라 <strong>실험할 후보를 줄여 주는 거름망</strong>으로 봅니다.</p>
+<ul><li>성적이 54%여도, 수천 개 후보를 수백 개로 줄이는 데는 쓸모가 있다고 말합니다. 특히 생화학 지식과 활성 부위를 직접 살펴보는 작업을 함께 하면 더 좋습니다.</li><li>가장 좋은 방법은 <strong>Vina로 포즈를 찾고, 머신러닝으로 다시 점수를 매기는 것</strong>입니다. 각자 잘하는 일을 나눠 맡기는 조합입니다.</li><li>메타모델은 개선 폭이 작지만 여러 시험에서 가장 꾸준해서 기본값으로 골랐습니다. 다만 사용자는 Vina, Vinardo, 개별 ML 함수 중에서 자유롭게 고를 수 있습니다.</li><li>플랫폼은 여러 해 동안 실제 사례에 쓰였고(두 건 출판), 일부 덜 성공한 사례에서 점수 정확도가 개선점으로 드러났다고 밝힙니다.</li></ul></div><div class="prose v-detail"><span class="rail-label">자세히</span><ul><li>메타모델의 가중치: Rf-Score v2(2.206)가 압도적으로 크고, Rf-Score v1(−0.903), PLECrf(−0.178), PLEClinear(−0.057)는 음수, Vinardo(0.056)는 작다. 절편 β0 = 2.259. 음수 가중치는 다른 모델과 겹치는 신호를 보정하는 역할일 수 있다(내 해석).</li><li>저자들은 ML 함수가 포즈 선택에 약한 이유를 ‘실험으로 정해진 맞는 구조로 학습해서 틀린 구조를 알아보는 법을 배우지 못했기 때문’으로 추정한다.</li><li>ML 재채점은 필터링 단계 뒤의 선택 단계로 플랫폼에 들어갔다.</li></ul></div></section>
+<section id="figures"><span class="kicker">그림·표 해석</span><h2>그림과 표 읽기</h2><div class="prose"><p>이 세션에서는 그림 서버 접속이 막혀 원본 이미지를 가져오지 못했습니다. 대신 PubMed 본문에 남아 있는 <strong>그림 캡션과 본문 수치</strong>로 각 그림을 해석하고, 수치가 보고된 부분은 다시 그렸습니다. 원본 그림은 <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13663853/" target="_blank" rel="noopener">PMC 원문</a>에서 같이 보세요.</p></div><article class="fig" id="f-fig1">
+<div class="fig-head"><span class="fig-label">Figure 1 · 구조도 (아키텍처 다이어그램)</span><h3>플랫폼의 모듈 구조와 데이터 흐름</h3></div>
+<div class="fig-missing">원본 이미지 없이 캡션과 본문으로 해석했습니다.</div>
+<p class="chart-t">8개 모듈이 하는 일</p><div class="tbl-wrap"><table><thead><tr><th>모듈</th><th>역할</th></tr></thead><tbody><tr><td>Pipeline</td><td>전체 작업 순서를 지휘하고 저장을 관리 (지휘자)</td></tr><tr><td>서열 모듈</td><td>자연 서열 수집 또는 돌연변이 서열 생성</td></tr><tr><td>모델링 모듈</td><td>3D 구조 예측과 품질 평가</td></tr><tr><td>도킹 모듈</td><td>단백질-리간드 도킹, 결합 친화도 계산</td></tr><tr><td>측정 모듈</td><td>단백질과 리간드 특정 원자 사이 거리 계산</td></tr><tr><td>필터·순위 모듈</td><td>사용자 기준으로 포즈를 거르고 변이체 순위 매김</td></tr><tr><td>실행 모듈</td><td>단일 스레드 또는 분산(MPI) 실행</td></tr><tr><td>데이터베이스 모듈</td><td>SQLite3로 모든 결과 저장</td></tr></tbody></table></div><p class="chart-cap">본문의 모듈 설명을 표로 정리. 그림 속 모듈 이름 표기는 원문을 확인하세요.</p>
+<div class="fig-grid"><h4>무엇을 보여주나</h4><div class="prose"><p>플랫폼을 이루는 8개 파이썬 모듈이 어떻게 연결되는지 보여 주는 소프트웨어 설계도입니다.</p></div><h4>읽는 순서</h4><div class="prose"><ol><li><strong>구조도 읽는 법</strong>: 상자는 모듈, 화살표는 관계입니다. 이 그림은 화살표가 두 종류라서 먼저 구별해야 합니다.</li><li>굵은 화살표를 따라가면 데이터가 서열 → 모델링 → 도킹 → 측정 → 필터로 한 줄로 흐릅니다.</li><li>가는 화살표는 Pipeline 모듈이 각 단계를 ‘지휘’하는 관계입니다.</li><li>마지막으로 모든 상자가 데이터베이스 모듈로 결과를 모은다는 점을 확인합니다.</li></ol></div><h4>핵심 발견</h4><div class="prose"><ul><li>작업은 한 줄로 이어지는 선형 파이프라인이다.</li><li>지휘(Pipeline), 계산(각 단계 모듈), 저장(데이터베이스)이 분리되어 있다.</li><li>중간 결과까지 전부 저장해서 나중에 다시 분석하거나 디버깅할 수 있다.</li></ul></div><h4>그래서 무슨 의미?</h4><div class="prose"><p>모듈을 나눠 두면 한 단계만 바꾸기 쉽습니다. 실제로 이 논문에서 ML 재채점 단계를 나중에 끼워 넣을 수 있었던 것도 이 구조 덕분입니다. 저자들이 ‘객체지향, 모듈식 설계로 확장이 쉽다’고 강조하는 근거가 이 그림입니다.</p></div><div class="callout warn"><span class="callout-t">해석할 때 주의</span><p>설계도는 성능을 보여 주지 않습니다. 구조가 깔끔하다는 것과 예측이 정확하다는 것은 별개입니다.</p></div></div>
+<details><summary>원문 캡션 보기</summary><p class="orig">High-level diagram illustrating the architecture and data flow of the platform. The Pipeline functions as the central orchestrator coordinating and scheduling task execution across specialized modules in a linear pipeline workflow… Data flows between processing modules are represented by bold arrows, while narrow arrows indicate the orchestration and management of operations. All intermediate and final results are centralized in the database module.</p></details>
+</article><article class="fig" id="f-fig2">
+<div class="fig-head"><span class="fig-label">Figure 2 · ERD (개체-관계 다이어그램)</span><h3>결과를 저장하는 데이터베이스 설계</h3></div>
+<div class="fig-missing">원본 이미지 없이 캡션과 본문으로 해석했습니다.</div>
+<p class="chart-t">7개 테이블</p><div class="tbl-wrap"><table><thead><tr><th>테이블</th><th>담는 내용</th></tr></thead><tbody><tr><td>Proteins</td><td>기준 단백질 이름, UniProt ID</td></tr><tr><td>Variants</td><td>변이체 이름(예: A:V220L), 서열, 야생형 여부</td></tr><tr><td>Models</td><td>예측 구조, 사용 소프트웨어, 품질 점수, 거부 여부</td></tr><tr><td>Evaluations</td><td>변이체·모델·포즈를 하나의 평가로 연결, 리간드와 방법</td></tr><tr><td>Poses</td><td>도킹 포즈 번호와 에너지</td></tr><tr><td>Metrics</td><td>필터에 쓰는 거리 기준의 이름</td></tr><tr><td>Measurements</td><td>포즈별 거리 측정값</td></tr></tbody></table></div>
+<div class="fig-grid"><h4>무엇을 보여주나</h4><div class="prose"><p>플랫폼이 계산 결과를 어떤 표들에 어떻게 나눠 저장하는지 보여 줍니다.</p></div><h4>읽는 순서</h4><div class="prose"><ol><li><strong>ERD 읽는 법</strong>: 상자 하나가 표(테이블)이고, 안의 줄이 열(속성)입니다. 열쇠 표시는 각 행을 구별하는 기본키입니다.</li><li>상자 사이 선은 ‘어느 표의 행이 다른 표의 행을 가리키는지’(외래키)입니다. 선 끝 모양이 1:다 같은 개수 관계를 뜻합니다.</li><li>Proteins → Variants → Models → Poses 순으로 따라가면 ‘단백질 하나에 변이체 여러 개, 변이체 하나에 모델 여러 개, 모델 하나에 포즈 여러 개’ 구조가 보입니다.</li></ol></div><h4>핵심 발견</h4><div class="prose"><ul><li>Evaluations 테이블이 변이체, 모델, 포즈를 한 번의 평가로 묶는 중심 역할을 한다.</li><li>거리 필터용 값(Metrics, Measurements)을 따로 저장해서, 다시 도킹하지 않고 필터 조건만 바꿔 조회할 수 있다.</li></ul></div><h4>그래서 무슨 의미?</h4><div class="prose"><p>‘촉매에 맞는 자세의 포즈만 다시 골라 보기’ 같은 후속 분석을 계산을 반복하지 않고 데이터베이스 조회만으로 할 수 있습니다. 재현성과 재분석을 중시한 설계입니다.</p></div><div class="callout warn"><span class="callout-t">해석할 때 주의</span><p>그림의 정확한 열 이름과 관계 표기는 원본을 봐야 합니다. 위 표는 본문 설명을 요약한 것입니다.</p></div></div>
+<details><summary>원문 캡션 보기</summary><p class="orig">Relational model (entity-relationship diagram) of the platform&#x27;s database. This diagram depicts the logical structure and organization of the database used here, including all entities, their principal attributes, and the relationships among them. Entities are represented as tables containing attributes, with primary keys indicated and foreign key relationships explicitly shown.</p></details>
+</article><article class="fig" id="f-fig3">
+<div class="fig-head"><span class="fig-label">Figure 3 · 막대그래프 (오차막대 포함)</span><h3>점수 함수별로 돌연변이 효과를 맞힌 비율 (260쌍)</h3></div>
+<div class="fig-missing">원본 이미지 없이 캡션과 본문 수치로 다시 그렸습니다. 수치가 보고된 함수만 표시했습니다.</div>
+<figure class="chart"><div class="chart-scroll"><svg viewBox="0 0 640 212" role="img" aria-label="막대그래프"><line class="grid" x1="174.8" x2="174.8" y1="6" y2="190"/><text class="tick" x="174.8" y="206" text-anchor="middle">0</text><line class="grid" x1="275.1" x2="275.1" y1="6" y2="190"/><text class="tick" x="275.1" y="206" text-anchor="middle">20</text><line class="grid" x1="375.4" x2="375.4" y1="6" y2="190"/><text class="tick" x="375.4" y="206" text-anchor="middle">40</text><line class="grid" x1="475.7" x2="475.7" y1="6" y2="190"/><text class="tick" x="475.7" y="206" text-anchor="middle">60</text><line class="grid" x1="576.0" x2="576.0" y1="6" y2="190"/><text class="tick" x="576.0" y="206" text-anchor="middle">80</text><g><title>고전 함수 4종 · X-ray: 50%</title><text class="lbl" x="164.78" y="25.5" text-anchor="end">고전 함수 4종 · X-ray</text><rect class="bar muted" x="174.8" y="12" width="250.8" height="18" rx="2"/><text class="val" x="584" y="25.5">≈50%</text></g><g><title>고전 함수 4종 · 도킹 후: 50%</title><text class="lbl" x="164.78" y="55.5" text-anchor="end">고전 함수 4종 · 도킹 후</text><rect class="bar muted" x="174.8" y="42" width="250.8" height="18" rx="2"/><text class="val" x="584" y="55.5">≈50%</text></g><g><title>RF-Score v2 · X-ray: 72%</title><text class="lbl" x="164.78" y="85.5" text-anchor="end">RF-Score v2 · X-ray</text><rect class="bar " x="174.8" y="72" width="361.1" height="18" rx="2"/><text class="val" x="584" y="85.5">≈72%</text></g><g><title>RF-Score v2 · 도킹 후: 55%</title><text class="lbl" x="164.78" y="115.5" text-anchor="end">RF-Score v2 · 도킹 후</text><rect class="bar muted" x="174.8" y="102" width="275.8" height="18" rx="2"/><text class="val" x="584" y="115.5">55%</text></g><g><title>NNScore · X-ray: 60%</title><text class="lbl" x="164.78" y="145.5" text-anchor="end">NNScore · X-ray</text><rect class="bar muted" x="174.8" y="132" width="300.9" height="18" rx="2"/><text class="val" x="584" y="145.5">≈60%</text></g><g><title>NNScore · 도킹 후: 60%</title><text class="lbl" x="164.78" y="175.5" text-anchor="end">NNScore · 도킹 후</text><rect class="bar muted" x="174.8" y="162" width="300.9" height="18" rx="2"/><text class="val" x="584" y="175.5">≈60%</text></g></svg></div><p class="chart-cap">고전 함수 = Vina, Smina, Vinardo, AD4. 원본은 함수마다 파랑(X-ray)과 노랑(도킹 후) 막대가 짝지어 있고 오차막대가 있다.</p></figure>
+<div class="fig-grid"><h4>무엇을 보여주나</h4><div class="prose"><p>11개 점수 함수가 ‘이 돌연변이가 결합을 좋게 했나, 나쁘게 했나’를 얼마나 맞혔는지를 두 조건에서 비교합니다.</p></div><h4>읽는 순서</h4><div class="prose"><ol><li>먼저 <strong>50% 선</strong>을 머릿속에 그립니다. 좋아짐/나빠짐 둘 중 하나를 맞히는 시험이라 찍어도 50%입니다.</li><li>같은 함수의 파란 막대(정답 X-ray 구조)와 노란 막대(도킹으로 다시 놓은 구조)를 비교합니다. 노란 쪽이 실제 사용 상황에 더 가깝습니다.</li><li>오차막대(95% 신뢰구간)가 다른 막대의 오차막대와 겹치는지 봅니다. 겹치면 ‘더 낫다’고 말하기 어렵습니다.</li><li>끝으로 50% 선을 확실히 넘고, 오차막대도 다른 것과 겹치지 않는 막대가 있는지 찾습니다.</li></ol></div><h4>핵심 발견</h4><div class="prose"><ul><li>고전 함수 4종은 두 조건 모두 약 50%로 찍는 수준이었다.</li><li>RF-Score v2만 X-ray에서 약 72%로 다른 ML 모델의 오차 범위를 확실히 넘었다.</li><li>하지만 도킹 후에는 RF-Score v2도 55%로 떨어져 다른 모델과 구별되지 않았다.</li><li>NNScore는 두 조건 모두 약 60%였지만 오차 범위 안이었다.</li></ul></div><h4>그래서 무슨 의미?</h4><div class="prose"><p>‘구조가 정확하면 ML이 꽤 잘 맞힌다, 하지만 구조가 조금만 어긋나도 이점이 사라진다’로 읽을 수 있습니다. 점수 함수 하나만 바꿔서는 부족하고, 구조 예측과 도킹 단계의 정확도도 같이 올라가야 한다는 뜻입니다.</p></div><div class="callout warn"><span class="callout-t">해석할 때 주의</span><p>대부분의 ΔΔG가 매우 작아서 측정 오차 수준의 차이를 맞히는 시험입니다. 또 이 시험은 부호(방향)만 보고 크기는 보지 않습니다.</p></div></div>
+<div class="prose v-detail"><span class="rail-label">자세히</span><p>오차막대는 260쌍을 복원추출로 10,000번 다시 뽑아 만든 백분위 부트스트랩 95% 신뢰구간이다. 비대칭인 이유는 성공률이 0~100% 사이로 제한되고 분포가 한쪽으로 치우칠 수 있기 때문이다. 도킹 후 구조는 Vina가 찾은 최저 에너지 포즈를 썼다.</p></div>
+<details><summary>원문 캡션 보기</summary><p class="orig">Percentage of successes for each scoring function in predicting the mutation&#x27;s effect on binding affinity within 260 of reference-variant pairs. Success is defined as the fraction of cases in which the scoring function correctly predicted the sign of the change in binding free energy (ΔΔG) compared to experimental data. Bars show the observed success rates, with asymmetric error bars representing 95% percentile-bootstrap confidence intervals calculated from 10000 resamples… Results are shown for scores calculated using both X-ray crystal structures (blue) and structures after ligand re-docking into the protein&#x27;s active site (yellow)…</p></details>
+</article><article class="fig" id="f-fig4">
+<div class="fig-head"><span class="fig-label">Figure 4 · 막대그래프 2패널 (A: R², B: 성공률)</span><h3>스태킹 메타모델과 개별 점수 함수 비교</h3></div>
+<div class="fig-missing">원본 이미지 없이 캡션과 본문 수치로 해석했습니다. 패널 A의 R² 값은 본문에 숫자로 나오지 않아 그리지 않았습니다.</div>
+<figure class="chart"><p class="chart-t">패널 B: 돌연변이 부호 예측 성공률</p><div class="chart-scroll"><svg viewBox="0 0 640 152" role="img" aria-label="패널 B: 돌연변이 부호 예측 성공률"><line class="grid" x1="170.1" x2="170.1" y1="6" y2="130"/><text class="tick" x="170.1" y="146" text-anchor="middle">0</text><line class="grid" x1="271.6" x2="271.6" y1="6" y2="130"/><text class="tick" x="271.6" y="146" text-anchor="middle">20</text><line class="grid" x1="373.0" x2="373.0" y1="6" y2="130"/><text class="tick" x="373.0" y="146" text-anchor="middle">40</text><line class="grid" x1="474.5" x2="474.5" y1="6" y2="130"/><text class="tick" x="474.5" y="146" text-anchor="middle">60</text><line class="grid" x1="576.0" x2="576.0" y1="6" y2="130"/><text class="tick" x="576.0" y="146" text-anchor="middle">80</text><g><title>메타모델 · X-ray: 71%</title><text class="lbl" x="160.1" y="25.5" text-anchor="end">메타모델 · X-ray</text><rect class="bar " x="170.1" y="12" width="360.2" height="18" rx="2"/><text class="val" x="584" y="25.5">71%</text></g><g><title>RF-Score v2 · X-ray: 72%</title><text class="lbl" x="160.1" y="55.5" text-anchor="end">RF-Score v2 · X-ray</text><rect class="bar muted" x="170.1" y="42" width="365.3" height="18" rx="2"/><text class="val" x="584" y="55.5">≈72%</text></g><g><title>메타모델 · 도킹 후: 55%</title><text class="lbl" x="160.1" y="85.5" text-anchor="end">메타모델 · 도킹 후</text><rect class="bar " x="170.1" y="72" width="279.1" height="18" rx="2"/><text class="val" x="584" y="85.5">55%</text></g><g><title>RF-Score v2 · 도킹 후: 55%</title><text class="lbl" x="160.1" y="115.5" text-anchor="end">RF-Score v2 · 도킹 후</text><rect class="bar muted" x="170.1" y="102" width="279.1" height="18" rx="2"/><text class="val" x="584" y="115.5">55%</text></g></svg></div><p class="chart-cap">RF-Score v2 값은 그림 3과 본문 수치.</p></figure>
+<figure class="chart"><p class="chart-t">메타모델을 이루는 5개 모델의 가중치 (표 1)</p><div class="chart-scroll"><svg viewBox="0 0 640 182" role="img" aria-label="메타모델을 이루는 5개 모델의 가중치 (표 1)"><line class="grid" x1="110.0" x2="110.0" y1="6" y2="160"/><text class="tick" x="110.0" y="176" text-anchor="middle">-1</text><line class="grid" x1="226.5" x2="226.5" y1="6" y2="160"/><text class="tick" x="226.5" y="176" text-anchor="middle">0</text><line class="grid" x1="343.0" x2="343.0" y1="6" y2="160"/><text class="tick" x="343.0" y="176" text-anchor="middle">1</text><line class="grid" x1="459.5" x2="459.5" y1="6" y2="160"/><text class="tick" x="459.5" y="176" text-anchor="middle">2</text><line class="grid" x1="576.0" x2="576.0" y1="6" y2="160"/><text class="tick" x="576.0" y="176" text-anchor="middle">3</text><g><title>Rf-Score v2: 2.21</title><text class="lbl" x="100" y="25.5" text-anchor="end">Rf-Score v2</text><rect class="bar " x="226.5" y="12" width="257.0" height="18" rx="2"/><text class="val" x="584" y="25.5">2.206</text></g><g><title>Vinardo: 0.06</title><text class="lbl" x="100" y="55.5" text-anchor="end">Vinardo</text><rect class="bar muted" x="226.5" y="42" width="6.5" height="18" rx="2"/><text class="val" x="584" y="55.5">0.056</text></g><g><title>PLEClinear: -0.06</title><text class="lbl" x="100" y="85.5" text-anchor="end">PLEClinear</text><rect class="bar muted" x="219.9" y="72" width="6.6" height="18" rx="2"/><text class="val" x="584" y="85.5">−0.057</text></g><g><title>PLECrf: -0.18</title><text class="lbl" x="100" y="115.5" text-anchor="end">PLECrf</text><rect class="bar muted" x="205.8" y="102" width="20.7" height="18" rx="2"/><text class="val" x="584" y="115.5">−0.178</text></g><g><title>Rf-Score v1: -0.9</title><text class="lbl" x="100" y="145.5" text-anchor="end">Rf-Score v1</text><rect class="bar muted" x="121.3" y="132" width="105.2" height="18" rx="2"/><text class="val" x="584" y="145.5">−0.903</text></g><line class="zero" x1="226.5" x2="226.5" y1="6" y2="160"/></svg></div><p class="chart-cap">선형회귀 메타모델의 계수. 절편 β0 = 2.259는 제외.</p></figure>
+<div class="fig-grid"><h4>무엇을 보여주나</h4><div class="prose"><p>여러 점수 함수를 합친 메타모델이 단독 함수보다 나은지를 두 가지 기준으로 봅니다. A는 결합 세기 예측이 실험값과 얼마나 맞는지(R²), B는 돌연변이 효과의 방향을 맞힌 비율입니다.</p></div><h4>읽는 순서</h4><div class="prose"><ol><li><strong>R² 읽는 법</strong>: 0~1 사이 값으로, 실험값의 차이를 예측이 얼마나 설명하는지입니다. 1에 가까울수록 좋습니다.</li><li>패널 A에서 메타모델 막대가 가장 높은지, 그리고 오차막대가 RF-Score v2와 겹치는지 봅니다.</li><li>패널 B로 넘어가 같은 비교를 성공률로 합니다. 50% 선이 기준입니다.</li><li>가중치 표에서는 막대 길이가 그 모델의 영향력입니다. 하나가 압도적으로 길면 사실상 그 모델 중심의 앙상블입니다.</li></ol></div><h4>핵심 발견</h4><div class="prose"><ul><li>패널 A: 메타모델의 R²가 모든 단독 함수보다 높았지만, MSE는 RF-Score v2의 오차 범위 안이었다.</li><li>패널 B: 메타모델 71%(X-ray), 55%(도킹 후)로 RF-Score v2와 비슷했다.</li><li>가중치는 Rf-Score v2(2.206)에 집중되어 있다.</li></ul></div><h4>그래서 무슨 의미?</h4><div class="prose"><p>앙상블이 ‘결합 세기’ 예측은 조금 더 잘하지만, ‘돌연변이가 좋은지 나쁜지’ 판단에서는 RF-Score v2 하나와 큰 차이가 없습니다. 효소 공학에서 실제로 필요한 건 후자라서, 개선 효과는 제한적이라고 볼 수 있습니다.</p></div><div class="callout warn"><span class="callout-t">해석할 때 주의</span><p>가중치가 음수라고 그 모델이 ‘나쁘다’는 뜻은 아닙니다. 서로 비슷한 정보를 가진 모델을 함께 넣으면 한쪽이 음수로 보정되는 일이 흔합니다(내 해석).</p></div></div>
+<details><summary>원문 캡션 보기</summary><p class="orig">Histogram comparison of predicted versus experimental binding affinity metrics for the stacking validation set. (A) R² between predicted and experimental values for X-ray crystal structures (blue) and ligand re-docked structures using AutoDock Vina (yellow)… (B) Percentage of successes in predicting the sign of the mutation&#x27;s effect on binding affinity (ΔΔG) for the same structural contexts… For mutation subsets within the database, the metamodel achieved similar performance with the best individual model (Rf-Score v2), reaching 71% on X-ray structures and 55% post-docking.</p></details>
+</article><article class="fig" id="f-fig5">
+<div class="fig-head"><span class="fig-label">Figure 5 · 막대그래프 (오차막대 포함)</span><h3>플랫폼 전체를 거쳤을 때 돌연변이 효과를 맞힌 비율</h3></div>
+<div class="fig-missing">원본 이미지 없이 캡션과 본문 수치로 해석했습니다. 최고 성적(RF-Score v1) 외 수치는 본문에 없어 그리지 않았습니다.</div>
+<figure class="chart"><div class="chart-scroll"><svg viewBox="0 0 640 122" role="img" aria-label="막대그래프"><line class="grid" x1="266.0" x2="266.0" y1="6" y2="100"/><text class="tick" x="266.0" y="116" text-anchor="middle">0</text><line class="grid" x1="343.5" x2="343.5" y1="6" y2="100"/><text class="tick" x="343.5" y="116" text-anchor="middle">20</text><line class="grid" x1="421.0" x2="421.0" y1="6" y2="100"/><text class="tick" x="421.0" y="116" text-anchor="middle">40</text><line class="grid" x1="498.5" x2="498.5" y1="6" y2="100"/><text class="tick" x="498.5" y="116" text-anchor="middle">60</text><line class="grid" x1="576.0" x2="576.0" y1="6" y2="100"/><text class="tick" x="576.0" y="116" text-anchor="middle">80</text><g><title>찍어서 맞힐 확률: 50%</title><text class="lbl" x="256.03999999999996" y="25.5" text-anchor="end">찍어서 맞힐 확률</text><rect class="bar muted" x="266.0" y="12" width="193.7" height="18" rx="2"/><text class="val" x="584" y="25.5">50%</text></g><g><title>RF-Score v1 (최고): 54%</title><text class="lbl" x="256.03999999999996" y="55.5" text-anchor="end">RF-Score v1 (최고)</text><rect class="bar " x="266.0" y="42" width="209.2" height="18" rx="2"/><text class="val" x="584" y="55.5">≈54%</text></g><g><title>참고: RF-Score v2 · X-ray (그림 3): 72%</title><text class="lbl" x="256.03999999999996" y="85.5" text-anchor="end">참고: RF-Score v2 · X-ray (그림 3)</text><rect class="bar muted" x="266.0" y="72" width="279.0" height="18" rx="2"/><text class="val" x="584" y="85.5">≈72%</text></g></svg></div></figure>
+<div class="fig-grid"><h4>무엇을 보여주나</h4><div class="prose"><p>실제 사용 상황처럼 구조 예측부터 도킹, 재채점까지 GDEE 전체를 돌렸을 때의 성적입니다. 이 논문에서 가장 현실적인 결과입니다.</p></div><h4>읽는 순서</h4><div class="prose"><ol><li>그림 3과 같은 형식이므로 50% 선을 기준으로 봅니다.</li><li>가장 높은 막대(RF-Score v1)가 50%에서 얼마나 떨어져 있는지, 오차막대가 50%를 포함하는지 확인합니다.</li><li>그림 3의 X-ray 결과와 나란히 놓고, 같은 함수가 얼마나 떨어졌는지 비교합니다.</li></ol></div><h4>핵심 발견</h4><div class="prose"><ul><li>RF-Score v1이 약 54%로 가장 높았다.</li><li>그림 3에서 X-ray 기준 72%였던 수준에 비해 크게 낮아졌다.</li><li>저자들은 이 성적이 무작위보다 ‘조금’ 높을 뿐이라고 직접 밝힌다.</li></ul></div><h4>그래서 무슨 의미?</h4><div class="prose"><p>GDEE는 개별 돌연변이가 성공할지 예측하는 도구로는 아직 부족합니다. 하지만 수천 개 후보 중 좋은 후보가 조금이라도 더 많이 위로 올라오게 하는 ‘농축’ 효과는 실험 비용을 줄이는 데 의미가 있다고 저자들은 봅니다.</p></div><div class="callout warn"><span class="callout-t">해석할 때 주의</span><p>오차가 어디서 생겼는지(구조 예측, 단단한 단백질 가정, 포즈 선택, 점수) 단계별로 나눠 분석하지는 않았습니다. 저자들의 설명은 추정입니다.</p></div></div>
+<details><summary>원문 캡션 보기</summary><p class="orig">Percentage of successes for predicting mutation effects on binding affinity across scoring functions using the platform&#x27;s pipeline in the stacking validation set. Success is defined as correctly predicting the qualitative change in binding affinity (i.e., the sign of ΔΔG)… RFScore v1 achieved the highest success rate, while other scoring functions exhibited diverse results, potentially influenced by structural modeling uncertainties during protein structure prediction.</p></details>
+</article><article class="fig" id="f-tbl1">
+<div class="fig-head"><span class="fig-label">Table 1 · 표</span><h3>메타모델 구성과 가중치</h3></div>
+<div class="tbl-wrap"><table><thead><tr><th>구성 요소</th><th>가중치</th></tr></thead><tbody><tr><td>β0 (절편)</td><td>2.259</td></tr><tr><td>Rf-Score v1</td><td>−0.903</td></tr><tr><td>Rf-Score v2</td><td>2.206</td></tr><tr><td>PLECrf</td><td>−0.178</td></tr><tr><td>PLEClinear</td><td>−0.057</td></tr><tr><td>Vinardo</td><td>0.056</td></tr></tbody></table></div>
+<div class="fig-grid"><h4>무엇을 보여주나</h4><div class="prose"><p>최적 메타모델 = 2.259 + 2.206×(RF-Score v2) − 0.903×(RF-Score v1) − 0.178×(PLECrf) − 0.057×(PLEClinear) + 0.056×(Vinardo) 형태의 선형 결합입니다.</p></div><h4>핵심 발견</h4><div class="prose"><ul><li>RF-Score v2의 비중이 압도적이다.</li><li>고전 함수 중에서는 Vinardo 하나만 작은 가중치로 들어갔다.</li></ul></div><h4>그래서 무슨 의미?</h4><div class="prose"><p>그림 4의 가중치 막대그래프와 같은 내용입니다. 메타모델은 사실상 ‘RF-Score v2에 다른 모델로 약간 보정한 것’으로 읽을 수 있습니다.</p></div></div>
+<details><summary>원문 캡션 보기</summary><p class="orig">Composition and Relative Weights of the Five Base Models in the Optimized Stacking Ensemble Metamodel. β0 2.259; Rf-Score v1 –0.903; Rf-Score v2 2.206; PLECrf –0.178; PLEClinear –0.057; Vinardo 0.056.</p></details>
+</article></section>
+<section id="critique"><span class="kicker">비판적 읽기</span><h2>얼마나 믿을 수 있나</h2><div class="compare"><div><h4>믿을 만한 점</h4><ul><li>여러 해 써 온 도구를 정리해 <strong>누구나 쓸 수 있게 공개</strong>했다.</li><li>점수 함수 11개를 같은 기준으로 비교했고, 신뢰구간(부트스트랩 10,000회)을 함께 보고했다.</li><li>데이터 누수를 줄인 leak-proof 분할을 쓰고, 테스트 세트를 끝까지 건드리지 않았다.</li><li>성적이 낮은 결과(전체 파이프라인 54%)도 숨기지 않고, 해석의 한계를 직접 적었다.</li></ul></div><div><h4>조심할 점</h4><ul><li>실제 사용 조건에서 돌연변이 효과 예측이 <strong>무작위보다 조금 나은 수준</strong>이다.</li><li>결합 친화도는 촉매 효율의 대리 지표일 뿐이다. kcat이나 전이 상태 안정화는 다루지 않는다.</li><li>단백질을 단단하다고 가정하고, 리간드 없이 만든 상동성 모델을 쓴다.</li><li>ML 함수는 실험 구조로 학습되어 예측 구조에 약하다.</li><li>성공 사례로 든 실제 적용 중 출판된 것은 두 건이고, 나머지는 ‘곧 나올’ 예정이다.</li><li>평가는 ΔΔG의 부호만 보고, 효소 활성을 직접 측정한 실험 검증은 이 논문에 없다.</li></ul></div></div><div class="prose v-easy"><p>한마디로 <strong>설계가 잘된 도구 논문이고 결과 보고도 정직하지만, 예측력 자체는 아직 약하다</strong>고 평가할 수 있습니다. 보고서에 쓸 때 ‘컴퓨터가 좋은 효소를 찾아 준다’고 쓰면 과장이고, ‘실험 전에 후보를 줄이는 데 쓴다’가 정확합니다.</p></div></section>
+<section id="glossary"><span class="kicker">용어 사전</span><h2>모르는 단어 정리</h2><dl class="gloss"><dt>효소 공학<small>enzyme engineering</small></dt><dd>아미노산을 바꿔 효소의 성질(속도, 선택성, 안정성)을 개량하는 일.</dd><dt>유전자 발굴<small>gene discovery</small></dt><dd>자연에 있는 비슷한 효소들 중 원하는 반응을 잘할 것 같은 것을 찾는 일.</dd><dt>율속 단계<small>rate-limiting step</small></dt><dd>여러 단계 반응 중 가장 느려서 전체 속도를 정하는 단계.</dd><dt>촉매 효율<small>kcat/Km</small></dt><dd>효소가 얼마나 빠르고(kcat) 기질을 얼마나 잘 잡는지(Km)를 합친 지표. 클수록 좋다.</dd><dt>상동성 모델링<small>homology modeling</small></dt><dd>구조를 아는 비슷한 단백질을 틀로 삼아 새 서열의 3D 구조를 예측하는 방법.</dd><dt>분자 도킹<small>molecular docking</small></dt><dd>작은 분자(리간드)가 단백질의 어느 자리에 어떤 자세로 얼마나 세게 붙는지 계산으로 찾는 방법.</dd><dt>포즈<small>pose</small></dt><dd>도킹에서 리간드가 단백질에 붙어 있는 자세 하나.</dd><dt>점수 함수<small>scoring function</small></dt><dd>포즈의 결합 세기를 숫자로 매기는 공식. Vina 같은 고전 함수와 RF-Score 같은 ML 함수가 있다.</dd><dt>결합 자유에너지<small>ΔG</small></dt><dd>결합의 세기. 더 음수일수록 더 세게 붙는다.</dd><dt>ΔΔG</dt><dd>변이체와 야생형의 ΔG 차이. 부호가 돌연변이가 결합을 좋게 했는지 나쁘게 했는지를 알려 준다.</dd><dt>RMSD 2 Å</dt><dd>예측한 포즈와 실제 결정 구조 포즈의 평균 원자 거리 차이가 2 옹스트롬 이내면 ‘맞혔다’고 보는 관례적 기준.</dd><dt>스태킹 앙상블<small>stacking</small></dt><dd>여러 모델의 예측값을 입력으로 받아 최종 예측을 내는 상위 모델을 두는 방법.</dd><dt>데이터 누수<small>data leakage</small></dt><dd>시험 문제와 비슷한 자료가 학습에 섞여 성능이 부풀려지는 문제.</dd><dt>부트스트랩 신뢰구간</dt><dd>자료를 복원추출로 여러 번 다시 뽑아 결과가 얼마나 흔들리는지로 구한 구간.</dd></dl></section>
+<section id="quiz"><span class="kicker">셀프 체크</span><h2>이해했는지 확인</h2><div class="quiz"><details><summary>GDEE는 촉매 효율을 직접 계산하나요?</summary><div class="prose"><p>아니요. 계산이 너무 무거워서 <strong>결합 친화도를 대리 지표</strong>로 씁니다. 저자들은 결합이 좋아져도 촉매가 좋아진다는 보장은 없다고 밝힙니다.</p></div></details><details><summary>도킹 자세 찾기와 결합 세기 예측에서 각각 어떤 점수 함수가 나았나요?</summary><div class="prose"><p>자세 찾기는 Vina(54%)가, 결합 세기 예측은 ML 함수(특히 RF-Score v2)가 나았습니다. 그래서 ‘Vina로 포즈, ML로 재채점’을 권합니다.</p></div></details><details><summary>돌연변이 효과 부호 예측에서 50%가 중요한 기준인 이유는?</summary><div class="prose"><p>좋아짐/나빠짐 두 가지 중 하나를 맞히는 문제라 무작위로 찍어도 50%이기 때문입니다. 고전 함수는 약 50%였습니다.</p></div></details><details><summary>RF-Score v2가 X-ray에서는 72%인데 플랫폼 전체에서는 왜 성적이 떨어질까요?</summary><div class="prose"><p>실제 플랫폼은 예측 구조, 단단한 단백질 도킹, 포즈 선택을 거치며 오차가 쌓이고, ML 함수는 실험 구조로만 학습해서 예측 구조에 익숙하지 않기 때문이라고 저자들은 봅니다. 전체 파이프라인 최고 성적은 RF-Score v1의 약 54%였습니다.</p></div></details></div></section>
+<section id="relevance"><span class="kicker">내 프로젝트와 연결</span><h2>내 프로젝트에 어떻게 쓸까</h2><div class="prose v-easy"><p><code>profile/my-projects.md</code> 가 아직 비어 있어서 보고서·과제 주제와의 연관도는 매기지 못했습니다. 지금 알고 있는 내 프로젝트(GitHub의 Paper Reader)와, 어떤 보고서에서든 쓸 수 있는 활용법을 먼저 정리했습니다. 보고서나 프로젝트 주제를 알려 주시면 이 섹션을 다시 만들어 드립니다.</p></div><div class="proj"><div class="proj-head"><h3>Paper Reader (내 GitHub 프로젝트)</h3><span class="fit" aria-label="연관도 5점 중 2점">연관도 <i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i> 2/5</span></div><div class="prose"><p>주제(효소)는 다르지만, GDEE는 <strong>여러 단계를 자동으로 잇는 파이프라인 소프트웨어</strong>라서 설계 면에서 참고할 점이 있습니다. Paper Reader도 가져오기 → 읽기 → 리포트 생성으로 이어지는 파이프라인입니다.</p></div><div class="prose"><strong>이렇게 써먹기</strong><ul><li><strong>비싼 단계 앞에 품질 검사 두기</strong>: GDEE는 구조를 3배 만들고 나쁜 것을 버린 뒤 도킹합니다. Paper Reader도 본문이나 그림이 빠진 논문을 리포트 작성 전에 걸러 알려 주는 단계를 더 분명히 할 수 있습니다.</li><li><strong>중간 결과 저장</strong>: GDEE는 SQLite에 모든 단계를 저장해 재분석합니다. 읽은 논문이 쌓이면 <code>library/</code> 의 JSON을 모아 키워드나 프로젝트별로 검색하는 기능을 생각해 볼 수 있습니다.</li><li><strong>결과를 정직하게 보고하기</strong>: 이 논문처럼 리포트에도 ‘무엇을 확인 못 했는지’를 함께 적는 것이 신뢰도를 높입니다.</li></ul></div></div><div class="proj"><div class="proj-head"><h3>생명과학·화학·AI 보고서 공통 활용</h3></div><div class="prose"><p>효소 공학, 합성생물학, 신약 개발, 생명과학에서의 머신러닝을 다루는 보고서라면 근거나 사례로 쓸 수 있습니다.</p></div><div class="prose"><strong>이렇게 써먹기</strong><ul><li>서론: 효소 개량 실험은 조합이 너무 많아 컴퓨터로 먼저 거른다는 배경 설명</li><li>본론: ‘AI가 모든 걸 해결한다’에 대한 반례. 정답 구조에서는 72%지만 실제 파이프라인에서는 약 54%</li><li>방법론 비교: QM → MM → 도킹으로 갈수록 빠르지만 덜 정확하다는 계산 방법의 절충 관계</li></ul></div><div class="cite"><span class="cite-text">구조 기반 효소 공학 플랫폼 GDEE에서 머신러닝 점수 함수는 실험 구조에서 돌연변이의 결합 효과 방향을 약 72%까지 맞혔지만, 구조 예측과 도킹을 모두 거친 전체 파이프라인에서는 최고 약 54%에 그쳤다(Souza et al., 2026).</span><button type="button">복사</button></div><div class="cite"><span class="cite-text">따라서 이러한 계산 도구는 개별 변이의 성공 여부를 예측하기보다 실험 전에 후보군을 줄이는 우선순위 도구로 활용하는 것이 적절하다(Souza et al., 2026).</span><button type="button">복사</button></div></div><h3>다음에 할 일</h3><div class="prose"><ul><li>지금 하는 보고서나 프로젝트 주제를 알려 주기 (이 섹션을 맞춤으로 다시 만듦)</li><li>원본 그림을 보려면 <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13663853/" target="_blank" rel="noopener">PMC 원문</a> 열기, 또는 환경 설정에서 펍메드 도메인 허용</li><li>2026년 10월에 나온 최신 논문이라 PubMed에 아직 연관 논문이 연결되지 않았습니다. 비교 대상으로 본문에 나온 Rosetta, FoldX, AutoDock Vina 논문을 찾아볼 수 있습니다.</li></ul></div></section>
+<footer><p>출처: PubMed에서 가져온 논문 정보를 바탕으로 정리했습니다. 원문: <a href="https://doi.org/10.1021/acs.jcim.5c02688" target="_blank" rel="noopener">https://doi.org/10.1021/acs.jcim.5c02688</a></p><p>본문, 그림 캡션, 표 수치는 PubMed(PMC 전문)에서 가져왔습니다. 이 세션의 네트워크 설정이 논문 그림 서버를 막아 원본 그림 이미지는 넣지 못했고, 그래프는 본문에 적힌 수치로만 다시 그렸습니다. ≈ 표시는 본문이 ‘약’, ‘around’로 보고한 값입니다.</p><p>이 리포트는 학습용 요약입니다. 인용할 때는 반드시 원문을 확인하세요.</p></footer>
+  </main>
+</div>
+
+<dialog class="lightbox" id="lightbox" aria-label="그림 크게 보기">
+  <div class="lb-inner"><img id="lb-img" alt=""></div>
+  <button type="button" class="lb-close" id="lb-close">닫기</button>
+</dialog>
+
+<script>
+(function () {
+  var body = document.body, easy = document.getElementById('mode-easy'), det = document.getElementById('mode-detail');
+  function setMode(d) {
+    body.classList.toggle('detail', d);
+    easy.setAttribute('aria-pressed', String(!d));
+    det.setAttribute('aria-pressed', String(d));
+    try { localStorage.setItem('paper-reader-mode', d ? 'detail' : 'easy'); } catch (e) {}
+  }
+  easy.addEventListener('click', function () { setMode(false); });
+  det.addEventListener('click', function () { setMode(true); });
+  try { if (localStorage.getItem('paper-reader-mode') === 'detail') setMode(true); } catch (e) {}
+
+  var lb = document.getElementById('lightbox'), lbImg = document.getElementById('lb-img');
+  document.querySelectorAll('.fig-zoom').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var img = b.querySelector('img');
+      lbImg.src = img.src; lbImg.alt = img.alt;
+      if (lb.showModal) lb.showModal();
+    });
+  });
+  document.getElementById('lb-close').addEventListener('click', function () { lb.close(); });
+  lb.addEventListener('click', function (e) { if (e.target !== lbImg) lb.close(); });
+
+  document.querySelectorAll('.cite button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = b.parentNode.querySelector('.cite-text');
+      var done = function () { b.textContent = '복사됨'; setTimeout(function () { b.textContent = '복사'; }, 1600); };
+      var fallback = function () { var r = document.createRange(); r.selectNodeContents(t); var s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = '선택됨'; };
+      try { navigator.clipboard.writeText(t.innerText).then(done, fallback); } catch (e) { fallback(); }
+    });
+  });
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var secs = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+  function spy() {
+    var y = window.scrollY + 120, cur = 0;
+    secs.forEach(function (s, i) { if (s && s.offsetTop <= y) cur = i; });
+    links.forEach(function (a, i) { a.classList.toggle('on', i === cur); });
+    var on = links[cur];
+    if (on && on.parentNode.parentNode.scrollWidth > on.parentNode.parentNode.clientWidth) {
+      var toc = on.parentNode.parentNode, l = on.offsetLeft - toc.offsetLeft;
+      if (l < toc.scrollLeft || l > toc.scrollLeft + toc.clientWidth - 60) toc.scrollLeft = l - 20;
+    }
+  }
+  window.addEventListener('scroll', spy, { passive: true });
+  spy();
+})();
+</script>

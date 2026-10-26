@@ -20,7 +20,9 @@ python3 scripts/fetch_paper.py "<사용자가 보낸 링크>"
   2. PMCID가 있으면 `mcp__PubMed__get_full_text_article` 로 본문 텍스트
   3. 커넥터 본문에는 그림, 표, 캡션이 빠져 있다. 사용자에게 한 번만 알린다:
      "그림을 가져오려면 환경 설정 > Network access 에 `eutils.ncbi.nlm.nih.gov, pmc.ncbi.nlm.nih.gov, www.ncbi.nlm.nih.gov, cdn.ncbi.nlm.nih.gov, ftp.ncbi.nlm.nih.gov, www.ebi.ac.uk, europepmc.org` 를 추가하거나, 논문 PDF나 그림 캡처를 올려 주세요."
-     그리고 그림 없이 진행한다. 그림 카드는 만들지 말고 `source_note` 에 그림이 빠진 이유를 적는다.
+     그리고 원본 이미지 없이 진행한다. 커넥터 본문에 그림 캡션이 남아 있으면(숫자 뒤에 캡션 문단) 캡션과 본문 수치로
+     그림 카드를 만들고, `missing_note` 에 원본 이미지 없이 해석했다고 적는다. 막대 값 등은 본문에 적힌 수치만 쓴다.
+     `source_note` 에 그림이 빠진 이유를 적는다.
 - **PMCID가 없으면** (오픈액세스가 아니면) 초록만 있다. 사용자에게 PDF를 올려 달라고 하고,
   받으면 `python3 scripts/fetch_paper.py <링크> --pdf <파일>` (처음 한 번 `pip install pymupdf`).
   PDF가 없으면 초록 기반 리포트를 만들고 머리말 태그에 `초록 기반`을 넣는다.

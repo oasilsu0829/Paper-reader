@@ -1,0 +1,424 @@
+{
+  "page_title": "GDEE 효소 공학 플랫폼",
+  "meta": {
+    "title": "GDEE: A Structure-Based Platform for Gene Discovery and Enzyme Engineering",
+    "title_ko": "GDEE: 구조 기반으로 효소를 찾고 개량하는 자동화 플랫폼",
+    "authors": ["Caio S Souza", "João P G Correia", "Isabel Rocha", "Diana Lousa", "Cláudio M Soares"],
+    "journal": "Journal of Chemical Information and Modeling",
+    "year": "2026",
+    "pmid": "42912922",
+    "pmcid": "PMC13663853",
+    "doi": "10.1021/acs.jcim.5c02688",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42912922/",
+    "read_date": "2026-10-26",
+    "tags": ["계산 생물학", "소프트웨어 플랫폼", "분자 도킹", "머신러닝 재채점", "벤치마크 260쌍"]
+  },
+  "tldr": "효소 돌연변이 수천 개를 컴퓨터로 만들어 ‘기질에 더 잘 붙을 것 같은’ 후보를 골라 주는 파이프라인을 공개했다. 머신러닝 재채점이 결합 세기 예측을 개선했지만, ==전체 파이프라인에서 돌연변이 효과(좋아짐/나빠짐)를 맞힌 비율은 약 54%로 동전 던지기보다 조금 나은 수준==이라 실험 전 후보 줄이기 도구로 써야 한다.",
+  "overview": {
+    "points": [
+      "GDEE는 서열 만들기 → 3D 구조 예측 → 도킹 → 결합 에너지 평가의 4단계를 자동으로 돌리는 파이썬 플랫폼이다. 돌연변이를 설계하는 ‘효소 공학’과 자연 효소를 고르는 ‘유전자 발굴’을 모두 지원한다.",
+      "실제 촉매 효율(kcat/Km)을 계산하는 대신 **결합 친화도를 대리 지표**로 쓴다. 저자들도 결합이 좋아진다고 촉매가 좋아지는 건 아니라고 분명히 말한다.",
+      "결합 자세(포즈)를 찾는 데는 AutoDock Vina가 가장 정확했고(54%), 결합 세기 예측은 머신러닝 점수 함수(특히 RF-Score v2)가 더 나았다.",
+      "그래서 결론은 ==Vina로 포즈를 찾고, 머신러닝으로 다시 채점하라==는 조합이다. 5개 모델을 합친 스태킹 메타모델을 기본 재채점기로 넣었다.",
+      "그러나 구조 예측부터 도킹까지 전부 거치면 오차가 쌓여, 돌연변이 효과의 부호를 맞힌 최고 성적이 약 54%에 그쳤다."
+    ],
+    "stats": [
+      {"value": "4단계", "label": "파이프라인", "note": "서열 → 구조 → 도킹 → 평가"},
+      {"value": "8개", "label": "파이썬 모듈", "note": "SQLite 테이블 7개에 결과 저장"},
+      {"value": "4,482", "label": "단백질-리간드 복합체", "note": "PDBBind v2020 refined set"},
+      {"value": "260쌍", "label": "야생형-변이체 쌍", "note": "기준 단백질 187개"},
+      {"value": "≈54%", "label": "전체 파이프라인 최고 성적", "note": "RF-Score v1, 돌연변이 효과 부호 예측"}
+    ]
+  },
+  "sections": [
+    {
+      "id": "abstract",
+      "kicker": "초록",
+      "title": "초록을 쉽게 풀면",
+      "easy": "효소는 약, 연료, 식품 원료 같은 물질을 만드는 ‘생체 공장의 기계’입니다. 그런데 기계 하나가 느리면 공장 전체가 느려집니다(율속 단계). 이 느린 기계를 고치는 것이 **효소 공학**입니다.\n\n문제는 고칠 수 있는 방법이 너무 많다는 점입니다. 아미노산 몇 자리만 바꿔도 조합이 수천, 수만 개가 됩니다. 전부 실험할 수는 없으니, 연구팀은 컴퓨터로 먼저 걸러 주는 **GDEE 플랫폼**을 만들었습니다.\n\n비유하면, 열쇠(기질)에 더 잘 맞는 자물쇠(효소)를 찾으려고 자물쇠 수천 개를 3D로 그려 보고, 열쇠를 꽂아 보는 시뮬레이션을 자동으로 돌리는 프로그램입니다. 여기에 머신러닝으로 ‘얼마나 잘 맞는지’ 점수를 다시 매기는 기능을 더했습니다.",
+      "detail": "- **4단계**: (1) 서열 단계: 자연 효소 서열을 가져오거나 돌연변이 변이체를 생성 (2) 원자 수준 단백질 구조 예측 (3) 도킹 (4) 결합 에너지 평가. 결과는 실험 검증 우선순위가 매겨진 변이체 목록.\n- 초록은 머신러닝 재채점이 돌연변이 효과 예측 정확도를 ‘significantly’ 높인다고 쓰지만, 본문을 보면 개선 폭은 단독 점수 평가에서 크고(RF-Score v2 72%) 전체 파이프라인에서는 작다(최고 약 54%). 본문 쪽 표현이 더 신중하다."
+    },
+    {
+      "id": "background",
+      "kicker": "배경",
+      "title": "왜 이 연구를 했나",
+      "easy": "미생물로 물질을 만들 때 효율이 낮은 이유는 여러 가지입니다. 효소가 적게 만들어지거나, 일을 느리게 하거나, 기질이 부족하거나, 결과물이 독성이 있는 경우 등입니다.\n\n효소 양을 늘리는 방법(유전자 발현 강화)이 가장 흔하지만, **기질에 잘 붙지 못하는 효소는 아무리 많이 만들어도 소용없습니다.** 그래서 효소 자체를 다시 설계해야 합니다.\n\n컴퓨터로 효소를 설계하는 방법은 정확하지만 느린 것부터 빠르지만 대략적인 것까지 다양합니다. 수천 개 후보를 빠르게 비교하려면 빠른 방법(도킹)을 자동으로 돌리는 도구가 필요했고, 그것이 이 연구의 출발점입니다.",
+      "detail": "- 촉매 효율은 **kcat/Km**으로 나타낸다. kcat(턴오버 수)을 높이거나 Km(겉보기 미카엘리스 상수)을 낮추면 좋아진다. 기질 인식이나 활성 부위 적합도를 높이는 돌연변이는 Km을 낮출 수 있다.\n- 계산 방법의 스펙트럼: 양자역학(QM)·QM/MM은 반응 메커니즘과 활성화 장벽까지 보지만 고처리량에는 너무 무겁다. 분자역학(MM) 기반 자유에너지 계산과 메타다이내믹스도 무겁다. 분자 도킹은 단백질을 단단한 물체로 보고 용매를 명시하지 않는 등 근사가 많아 빠르다.\n- 기존 도구(Rosetta, FoldX, DynaMut)는 돌연변이의 안정성이나 상호작용을 평가하지만, 대규모 변이체 우선순위 매기기에는 자동화, 도킹 통합, 작업 흐름 표준화가 더 필요하다고 저자들은 본다."
+    },
+    {
+      "id": "methods",
+      "kicker": "방법",
+      "title": "플랫폼은 어떻게 돌아가나",
+      "easy": "사용자는 **기준 효소의 3D 구조**와 **리간드(기질 등)의 구조**만 넣으면 됩니다. 그다음은 플랫폼이 알아서 합니다.\n\n중간에 ‘품질 검사’가 있다는 점이 중요합니다. 3D 구조를 만들 때 필요한 수의 3배를 만든 뒤, 엉터리 구조는 버리고 좋은 것만 도킹으로 보냅니다. 시간이 오래 걸리는 단계 앞에 거름망을 둔 셈입니다.",
+      "detail": "- **서열 생성**: 효소 공학 모드는 사용자가 고른 자리의 돌연변이를 치환 행렬 점수로 샘플링(보존적/비보존적/무작위)하거나 모든 조합을 만든다. 유전자 발굴 모드는 BLAST로 미리 고른 자연 서열을 FASTA로 받는다. 두 모드는 이 단계만 다르다.\n- **구조 모델링**: Modeller로 상동성 모델을 만든다. 돌연변이 주변 반경(Å) 안의 곁사슬만 최적화하고 주사슬은 고정. 최적화 수준 0/1/2는 목적함수 평가를 최대 100/200/300회 한다.\n- **품질 평가**: VoroMQA와 Modeller의 normalized DOPE로 모델을 채택/거부. 큰 결함은 잡지만 미세한 결함은 놓쳐서 수작업 검토가 여전히 필요하다.\n- **도킹**: AutoDock Vina 또는 Smina, 점수 함수는 Vina 또는 Vinardo. 단백질은 계속 단단한 물체로 취급. 박스 크기와 중심은 사용자가 지정.\n- **필터링**: 리간드와 효소 원자 사이 거리 조건으로 ‘촉매에 맞는 자세’만 남기고, 그중 결합 친화도가 가장 좋은 포즈를 고른다.\n- **권장 설정**: 변이체당 모델 5개, exhaustiveness 100 이상. 정확도와 계산 비용의 절충점.\n- **병렬화**: MPI4Py로 분산 계산. 모든 결과는 SQLite에 저장.",
+      "blocks": [
+        {
+          "type": "flow",
+          "title": "GDEE 파이프라인",
+          "steps": [
+            {"title": "입력", "desc": "기준 효소 구조(PDB) + 리간드 구조(PDBQT)"},
+            {"title": "서열 생성", "desc": "돌연변이 조합 생성 또는 자연 서열(FASTA)"},
+            {"title": "3D 구조 예측", "desc": "Modeller 상동성 모델, 필요 수의 3배 생성"},
+            {"title": "품질 검사", "desc": "VoroMQA, DOPE로 나쁜 모델 제거"},
+            {"title": "도킹", "desc": "Vina/Smina, 단백질은 단단하다고 가정"},
+            {"title": "필터·순위", "desc": "원자 간 거리로 포즈 거르고 결합 에너지로 정렬"},
+            {"title": "(선택) ML 재채점", "desc": "스태킹 메타모델 등으로 점수 다시 매김"}
+          ],
+          "caption": "결과는 실험해 볼 변이체 후보의 우선순위 목록이다."
+        },
+        {
+          "type": "table",
+          "title": "구조 최적화 수준",
+          "headers": ["수준", "방식", "목적함수 평가 최대"],
+          "rows": [
+            ["0", "빠른 최적화 + 짧은 MD", "100회"],
+            ["1", "표준 최적화 + 느린 MD", "200회"],
+            ["2", "광범위한 최적화", "300회"]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "results",
+      "kicker": "결과",
+      "title": "무엇을 찾았나",
+      "easy": "연구팀은 플랫폼의 핵심인 **점수 함수**(얼마나 잘 붙는지 점수를 매기는 공식)를 고르려고 세 단계로 시험했습니다.\n\n**1. 정답 구조로 시험** (4,482개 복합체)\n결합 세기 예측은 머신러닝 점수 함수가 낫고, 결합 자세 찾기는 고전 함수(Vina)가 훨씬 나았습니다. 머신러닝은 ‘맞는 자세’만 보고 배워서 ‘틀린 자세’를 구별하지 못하는 것으로 보입니다.\n\n**2. 돌연변이 효과 맞히기** (260쌍)\n돌연변이가 결합을 좋게 했는지 나쁘게 했는지만 맞히는 시험입니다. 찍어도 50%인 시험인데, 고전 함수는 약 50%였고 RF-Score v2는 정답 구조에서 72%까지 올라갔습니다.\n\n**3. 플랫폼 전체로 시험**\n구조를 직접 예측하고 도킹까지 한 뒤 맞히게 하니, 가장 좋은 함수도 약 54%였습니다. 단계마다 생긴 작은 오차가 쌓였기 때문입니다.",
+      "detail": "- **도킹 정밀도**(결정 구조에서 2 Å 이내 포즈를 찾은 비율): Vina 54%, Smina·Vinardo·AD4 약 45%, ML 모델 2~17%.\n- **점수 정밀도**: Vina, Smina, Vinardo, AD4는 비슷했고, ML 중에서는 RF-Score v2가 가장 좋고 PLEC 계열은 나빴다.\n- **ΔΔG 부호 예측(260쌍)**: 고전 함수 약 50%(X-ray, 도킹 후 모두). RF-Score v2는 X-ray 72%로 다른 모델의 오차 범위를 확실히 넘은 유일한 ML 함수였지만, 도킹 후 55%로 떨어졌다. NNScore는 두 조건 모두 약 60%였지만 오차 범위 안.\n- 대부분의 ΔΔG는 매우 작다. 야생형과 변이체의 ΔG가 비슷해서 Vina의 오차 범위 안에 들어가는 경우가 많다.\n- **스태킹 메타모델**: 데이터 누수를 줄인 PDBBind 2020 leak-proof 분할로 개발. 선형회귀로 5개 기본 모델을 결합. R²는 모든 단독 함수보다 높았지만 MSE는 RF-Score v2의 오차 범위 안. 돌연변이 부호 예측은 X-ray 71%, 도킹 후 55%로 RF-Score v2와 비슷.\n- **전체 파이프라인**: 기준 단백질 187개로 변이체를 생성해 재채점. RF-Score v1이 약 54%로 가장 높았다. 저자들은 이것이 무작위 기준보다 ‘조금’ 높을 뿐이며 개별 돌연변이의 성공/실패 예측 근거로 해석하면 안 된다고 명시한다.",
+      "blocks": [
+        {
+          "type": "bars",
+          "title": "도킹 정밀도: 실제 결합 자세(2 Å 이내)를 찾은 비율",
+          "unit": "%",
+          "max": 60,
+          "items": [
+            {"label": "Vina", "value": 54, "display": "54%", "highlight": true},
+            {"label": "Smina", "value": 45, "display": "≈45%"},
+            {"label": "Vinardo", "value": 45, "display": "≈45%"},
+            {"label": "AD4", "value": 45, "display": "≈45%"},
+            {"label": "ML 모델 (최고치)", "value": 17, "display": "2~17%", "tone": "warn"}
+          ],
+          "caption": "본문 수치로 다시 그림. ML 모델은 범위(2~17%)만 보고되어 최고치로 표시했다."
+        },
+        {
+          "type": "bars",
+          "title": "돌연변이 효과의 부호를 맞힌 비율, 시험 조건별",
+          "unit": "%",
+          "max": 80,
+          "items": [
+            {"label": "찍어서 맞힐 확률", "value": 50, "display": "50%", "tone": "muted"},
+            {"label": "RF-Score v2 · 정답 구조", "value": 72, "display": "≈72%", "highlight": true},
+            {"label": "메타모델 · 정답 구조", "value": 71, "display": "71%", "highlight": true},
+            {"label": "RF-Score v2 · 도킹 후", "value": 55, "display": "55%"},
+            {"label": "메타모델 · 도킹 후", "value": 55, "display": "55%"},
+            {"label": "RF-Score v1 · 전체 파이프라인", "value": 54, "display": "≈54%", "tone": "warn"}
+          ],
+          "caption": "본문 수치로 다시 그림. 아래로 갈수록 실제 사용 조건에 가깝고, 성적이 50% 쪽으로 내려온다."
+        },
+        {
+          "type": "callout",
+          "title": "왜 전체 파이프라인에서 성적이 떨어질까",
+          "text": "1단계 시험은 실험으로 얻은 ‘정답 구조’에 점수만 매기게 한 것입니다. 실제 플랫폼은 리간드 없이 예측한 구조에, 단단한 단백질 가정으로 도킹하고, 포즈를 고른 뒤 채점합니다. 단계마다 생긴 작은 구조 오차가 최종 점수로 번집니다. 게다가 ML 함수는 실험 구조로 학습해서 예측 구조에는 익숙하지 않습니다."
+        }
+      ]
+    },
+    {
+      "id": "discussion",
+      "kicker": "고찰",
+      "title": "저자들의 해석과 결론",
+      "easy": "저자들은 GDEE를 ‘정답을 알려 주는 예언기’가 아니라 **실험할 후보를 줄여 주는 거름망**으로 봅니다.\n\n- 성적이 54%여도, 수천 개 후보를 수백 개로 줄이는 데는 쓸모가 있다고 말합니다. 특히 생화학 지식과 활성 부위를 직접 살펴보는 작업을 함께 하면 더 좋습니다.\n- 가장 좋은 방법은 **Vina로 포즈를 찾고, 머신러닝으로 다시 점수를 매기는 것**입니다. 각자 잘하는 일을 나눠 맡기는 조합입니다.\n- 메타모델은 개선 폭이 작지만 여러 시험에서 가장 꾸준해서 기본값으로 골랐습니다. 다만 사용자는 Vina, Vinardo, 개별 ML 함수 중에서 자유롭게 고를 수 있습니다.\n- 플랫폼은 여러 해 동안 실제 사례에 쓰였고(두 건 출판), 일부 덜 성공한 사례에서 점수 정확도가 개선점으로 드러났다고 밝힙니다.",
+      "detail": "- 메타모델의 가중치: Rf-Score v2(2.206)가 압도적으로 크고, Rf-Score v1(−0.903), PLECrf(−0.178), PLEClinear(−0.057)는 음수, Vinardo(0.056)는 작다. 절편 β0 = 2.259. 음수 가중치는 다른 모델과 겹치는 신호를 보정하는 역할일 수 있다(내 해석).\n- 저자들은 ML 함수가 포즈 선택에 약한 이유를 ‘실험으로 정해진 맞는 구조로 학습해서 틀린 구조를 알아보는 법을 배우지 못했기 때문’으로 추정한다.\n- ML 재채점은 필터링 단계 뒤의 선택 단계로 플랫폼에 들어갔다."
+    }
+  ],
+  "figures_intro": "이 세션에서는 그림 서버 접속이 막혀 원본 이미지를 가져오지 못했습니다. 대신 PubMed 본문에 남아 있는 **그림 캡션과 본문 수치**로 각 그림을 해석하고, 수치가 보고된 부분은 다시 그렸습니다. 원본 그림은 [PMC 원문](https://pmc.ncbi.nlm.nih.gov/articles/PMC13663853/)에서 같이 보세요.",
+  "figures": [
+    {
+      "id": "fig1",
+      "label": "Figure 1",
+      "kind": "구조도 (아키텍처 다이어그램)",
+      "missing_note": "원본 이미지 없이 캡션과 본문으로 해석했습니다.",
+      "title_ko": "플랫폼의 모듈 구조와 데이터 흐름",
+      "caption": "High-level diagram illustrating the architecture and data flow of the platform. The Pipeline functions as the central orchestrator coordinating and scheduling task execution across specialized modules in a linear pipeline workflow… Data flows between processing modules are represented by bold arrows, while narrow arrows indicate the orchestration and management of operations. All intermediate and final results are centralized in the database module.",
+      "blocks": [
+        {
+          "type": "table",
+          "title": "8개 모듈이 하는 일",
+          "headers": ["모듈", "역할"],
+          "rows": [
+            ["Pipeline", "전체 작업 순서를 지휘하고 저장을 관리 (지휘자)"],
+            ["서열 모듈", "자연 서열 수집 또는 돌연변이 서열 생성"],
+            ["모델링 모듈", "3D 구조 예측과 품질 평가"],
+            ["도킹 모듈", "단백질-리간드 도킹, 결합 친화도 계산"],
+            ["측정 모듈", "단백질과 리간드 특정 원자 사이 거리 계산"],
+            ["필터·순위 모듈", "사용자 기준으로 포즈를 거르고 변이체 순위 매김"],
+            ["실행 모듈", "단일 스레드 또는 분산(MPI) 실행"],
+            ["데이터베이스 모듈", "SQLite3로 모든 결과 저장"]
+          ],
+          "caption": "본문의 모듈 설명을 표로 정리. 그림 속 모듈 이름 표기는 원문을 확인하세요."
+        }
+      ],
+      "what": "플랫폼을 이루는 8개 파이썬 모듈이 어떻게 연결되는지 보여 주는 소프트웨어 설계도입니다.",
+      "how_to_read": [
+        "**구조도 읽는 법**: 상자는 모듈, 화살표는 관계입니다. 이 그림은 화살표가 두 종류라서 먼저 구별해야 합니다.",
+        "굵은 화살표를 따라가면 데이터가 서열 → 모델링 → 도킹 → 측정 → 필터로 한 줄로 흐릅니다.",
+        "가는 화살표는 Pipeline 모듈이 각 단계를 ‘지휘’하는 관계입니다.",
+        "마지막으로 모든 상자가 데이터베이스 모듈로 결과를 모은다는 점을 확인합니다."
+      ],
+      "findings": [
+        "작업은 한 줄로 이어지는 선형 파이프라인이다.",
+        "지휘(Pipeline), 계산(각 단계 모듈), 저장(데이터베이스)이 분리되어 있다.",
+        "중간 결과까지 전부 저장해서 나중에 다시 분석하거나 디버깅할 수 있다."
+      ],
+      "meaning": "모듈을 나눠 두면 한 단계만 바꾸기 쉽습니다. 실제로 이 논문에서 ML 재채점 단계를 나중에 끼워 넣을 수 있었던 것도 이 구조 덕분입니다. 저자들이 ‘객체지향, 모듈식 설계로 확장이 쉽다’고 강조하는 근거가 이 그림입니다.",
+      "caveat": "설계도는 성능을 보여 주지 않습니다. 구조가 깔끔하다는 것과 예측이 정확하다는 것은 별개입니다."
+    },
+    {
+      "id": "fig2",
+      "label": "Figure 2",
+      "kind": "ERD (개체-관계 다이어그램)",
+      "missing_note": "원본 이미지 없이 캡션과 본문으로 해석했습니다.",
+      "title_ko": "결과를 저장하는 데이터베이스 설계",
+      "caption": "Relational model (entity-relationship diagram) of the platform's database. This diagram depicts the logical structure and organization of the database used here, including all entities, their principal attributes, and the relationships among them. Entities are represented as tables containing attributes, with primary keys indicated and foreign key relationships explicitly shown.",
+      "blocks": [
+        {
+          "type": "table",
+          "title": "7개 테이블",
+          "headers": ["테이블", "담는 내용"],
+          "rows": [
+            ["Proteins", "기준 단백질 이름, UniProt ID"],
+            ["Variants", "변이체 이름(예: A:V220L), 서열, 야생형 여부"],
+            ["Models", "예측 구조, 사용 소프트웨어, 품질 점수, 거부 여부"],
+            ["Evaluations", "변이체·모델·포즈를 하나의 평가로 연결, 리간드와 방법"],
+            ["Poses", "도킹 포즈 번호와 에너지"],
+            ["Metrics", "필터에 쓰는 거리 기준의 이름"],
+            ["Measurements", "포즈별 거리 측정값"]
+          ]
+        }
+      ],
+      "what": "플랫폼이 계산 결과를 어떤 표들에 어떻게 나눠 저장하는지 보여 줍니다.",
+      "how_to_read": [
+        "**ERD 읽는 법**: 상자 하나가 표(테이블)이고, 안의 줄이 열(속성)입니다. 열쇠 표시는 각 행을 구별하는 기본키입니다.",
+        "상자 사이 선은 ‘어느 표의 행이 다른 표의 행을 가리키는지’(외래키)입니다. 선 끝 모양이 1:다 같은 개수 관계를 뜻합니다.",
+        "Proteins → Variants → Models → Poses 순으로 따라가면 ‘단백질 하나에 변이체 여러 개, 변이체 하나에 모델 여러 개, 모델 하나에 포즈 여러 개’ 구조가 보입니다."
+      ],
+      "findings": [
+        "Evaluations 테이블이 변이체, 모델, 포즈를 한 번의 평가로 묶는 중심 역할을 한다.",
+        "거리 필터용 값(Metrics, Measurements)을 따로 저장해서, 다시 도킹하지 않고 필터 조건만 바꿔 조회할 수 있다."
+      ],
+      "meaning": "‘촉매에 맞는 자세의 포즈만 다시 골라 보기’ 같은 후속 분석을 계산을 반복하지 않고 데이터베이스 조회만으로 할 수 있습니다. 재현성과 재분석을 중시한 설계입니다.",
+      "caveat": "그림의 정확한 열 이름과 관계 표기는 원본을 봐야 합니다. 위 표는 본문 설명을 요약한 것입니다."
+    },
+    {
+      "id": "fig3",
+      "label": "Figure 3",
+      "kind": "막대그래프 (오차막대 포함)",
+      "missing_note": "원본 이미지 없이 캡션과 본문 수치로 다시 그렸습니다. 수치가 보고된 함수만 표시했습니다.",
+      "title_ko": "점수 함수별로 돌연변이 효과를 맞힌 비율 (260쌍)",
+      "caption": "Percentage of successes for each scoring function in predicting the mutation's effect on binding affinity within 260 of reference-variant pairs. Success is defined as the fraction of cases in which the scoring function correctly predicted the sign of the change in binding free energy (ΔΔG) compared to experimental data. Bars show the observed success rates, with asymmetric error bars representing 95% percentile-bootstrap confidence intervals calculated from 10000 resamples… Results are shown for scores calculated using both X-ray crystal structures (blue) and structures after ligand re-docking into the protein's active site (yellow)…",
+      "blocks": [
+        {
+          "type": "bars",
+          "unit": "%",
+          "max": 80,
+          "items": [
+            {"label": "고전 함수 4종 · X-ray", "value": 50, "display": "≈50%", "tone": "muted"},
+            {"label": "고전 함수 4종 · 도킹 후", "value": 50, "display": "≈50%", "tone": "muted"},
+            {"label": "RF-Score v2 · X-ray", "value": 72, "display": "≈72%", "highlight": true},
+            {"label": "RF-Score v2 · 도킹 후", "value": 55, "display": "55%"},
+            {"label": "NNScore · X-ray", "value": 60, "display": "≈60%"},
+            {"label": "NNScore · 도킹 후", "value": 60, "display": "≈60%"}
+          ],
+          "caption": "고전 함수 = Vina, Smina, Vinardo, AD4. 원본은 함수마다 파랑(X-ray)과 노랑(도킹 후) 막대가 짝지어 있고 오차막대가 있다."
+        }
+      ],
+      "what": "11개 점수 함수가 ‘이 돌연변이가 결합을 좋게 했나, 나쁘게 했나’를 얼마나 맞혔는지를 두 조건에서 비교합니다.",
+      "how_to_read": [
+        "먼저 **50% 선**을 머릿속에 그립니다. 좋아짐/나빠짐 둘 중 하나를 맞히는 시험이라 찍어도 50%입니다.",
+        "같은 함수의 파란 막대(정답 X-ray 구조)와 노란 막대(도킹으로 다시 놓은 구조)를 비교합니다. 노란 쪽이 실제 사용 상황에 더 가깝습니다.",
+        "오차막대(95% 신뢰구간)가 다른 막대의 오차막대와 겹치는지 봅니다. 겹치면 ‘더 낫다’고 말하기 어렵습니다.",
+        "끝으로 50% 선을 확실히 넘고, 오차막대도 다른 것과 겹치지 않는 막대가 있는지 찾습니다."
+      ],
+      "findings": [
+        "고전 함수 4종은 두 조건 모두 약 50%로 찍는 수준이었다.",
+        "RF-Score v2만 X-ray에서 약 72%로 다른 ML 모델의 오차 범위를 확실히 넘었다.",
+        "하지만 도킹 후에는 RF-Score v2도 55%로 떨어져 다른 모델과 구별되지 않았다.",
+        "NNScore는 두 조건 모두 약 60%였지만 오차 범위 안이었다."
+      ],
+      "meaning": "‘구조가 정확하면 ML이 꽤 잘 맞힌다, 하지만 구조가 조금만 어긋나도 이점이 사라진다’로 읽을 수 있습니다. 점수 함수 하나만 바꿔서는 부족하고, 구조 예측과 도킹 단계의 정확도도 같이 올라가야 한다는 뜻입니다.",
+      "caveat": "대부분의 ΔΔG가 매우 작아서 측정 오차 수준의 차이를 맞히는 시험입니다. 또 이 시험은 부호(방향)만 보고 크기는 보지 않습니다.",
+      "detail": "오차막대는 260쌍을 복원추출로 10,000번 다시 뽑아 만든 백분위 부트스트랩 95% 신뢰구간이다. 비대칭인 이유는 성공률이 0~100% 사이로 제한되고 분포가 한쪽으로 치우칠 수 있기 때문이다. 도킹 후 구조는 Vina가 찾은 최저 에너지 포즈를 썼다."
+    },
+    {
+      "id": "fig4",
+      "label": "Figure 4",
+      "kind": "막대그래프 2패널 (A: R², B: 성공률)",
+      "missing_note": "원본 이미지 없이 캡션과 본문 수치로 해석했습니다. 패널 A의 R² 값은 본문에 숫자로 나오지 않아 그리지 않았습니다.",
+      "title_ko": "스태킹 메타모델과 개별 점수 함수 비교",
+      "caption": "Histogram comparison of predicted versus experimental binding affinity metrics for the stacking validation set. (A) R² between predicted and experimental values for X-ray crystal structures (blue) and ligand re-docked structures using AutoDock Vina (yellow)… (B) Percentage of successes in predicting the sign of the mutation's effect on binding affinity (ΔΔG) for the same structural contexts… For mutation subsets within the database, the metamodel achieved similar performance with the best individual model (Rf-Score v2), reaching 71% on X-ray structures and 55% post-docking.",
+      "blocks": [
+        {
+          "type": "bars",
+          "title": "패널 B: 돌연변이 부호 예측 성공률",
+          "unit": "%",
+          "max": 80,
+          "items": [
+            {"label": "메타모델 · X-ray", "value": 71, "display": "71%", "highlight": true},
+            {"label": "RF-Score v2 · X-ray", "value": 72, "display": "≈72%"},
+            {"label": "메타모델 · 도킹 후", "value": 55, "display": "55%", "highlight": true},
+            {"label": "RF-Score v2 · 도킹 후", "value": 55, "display": "55%"}
+          ],
+          "caption": "RF-Score v2 값은 그림 3과 본문 수치."
+        },
+        {
+          "type": "bars",
+          "title": "메타모델을 이루는 5개 모델의 가중치 (표 1)",
+          "items": [
+            {"label": "Rf-Score v2", "value": 2.206, "display": "2.206", "highlight": true},
+            {"label": "Vinardo", "value": 0.056, "display": "0.056"},
+            {"label": "PLEClinear", "value": -0.057, "display": "−0.057"},
+            {"label": "PLECrf", "value": -0.178, "display": "−0.178"},
+            {"label": "Rf-Score v1", "value": -0.903, "display": "−0.903"}
+          ],
+          "caption": "선형회귀 메타모델의 계수. 절편 β0 = 2.259는 제외."
+        }
+      ],
+      "what": "여러 점수 함수를 합친 메타모델이 단독 함수보다 나은지를 두 가지 기준으로 봅니다. A는 결합 세기 예측이 실험값과 얼마나 맞는지(R²), B는 돌연변이 효과의 방향을 맞힌 비율입니다.",
+      "how_to_read": [
+        "**R² 읽는 법**: 0~1 사이 값으로, 실험값의 차이를 예측이 얼마나 설명하는지입니다. 1에 가까울수록 좋습니다.",
+        "패널 A에서 메타모델 막대가 가장 높은지, 그리고 오차막대가 RF-Score v2와 겹치는지 봅니다.",
+        "패널 B로 넘어가 같은 비교를 성공률로 합니다. 50% 선이 기준입니다.",
+        "가중치 표에서는 막대 길이가 그 모델의 영향력입니다. 하나가 압도적으로 길면 사실상 그 모델 중심의 앙상블입니다."
+      ],
+      "findings": [
+        "패널 A: 메타모델의 R²가 모든 단독 함수보다 높았지만, MSE는 RF-Score v2의 오차 범위 안이었다.",
+        "패널 B: 메타모델 71%(X-ray), 55%(도킹 후)로 RF-Score v2와 비슷했다.",
+        "가중치는 Rf-Score v2(2.206)에 집중되어 있다."
+      ],
+      "meaning": "앙상블이 ‘결합 세기’ 예측은 조금 더 잘하지만, ‘돌연변이가 좋은지 나쁜지’ 판단에서는 RF-Score v2 하나와 큰 차이가 없습니다. 효소 공학에서 실제로 필요한 건 후자라서, 개선 효과는 제한적이라고 볼 수 있습니다.",
+      "caveat": "가중치가 음수라고 그 모델이 ‘나쁘다’는 뜻은 아닙니다. 서로 비슷한 정보를 가진 모델을 함께 넣으면 한쪽이 음수로 보정되는 일이 흔합니다(내 해석)."
+    },
+    {
+      "id": "fig5",
+      "label": "Figure 5",
+      "kind": "막대그래프 (오차막대 포함)",
+      "missing_note": "원본 이미지 없이 캡션과 본문 수치로 해석했습니다. 최고 성적(RF-Score v1) 외 수치는 본문에 없어 그리지 않았습니다.",
+      "title_ko": "플랫폼 전체를 거쳤을 때 돌연변이 효과를 맞힌 비율",
+      "caption": "Percentage of successes for predicting mutation effects on binding affinity across scoring functions using the platform's pipeline in the stacking validation set. Success is defined as correctly predicting the qualitative change in binding affinity (i.e., the sign of ΔΔG)… RFScore v1 achieved the highest success rate, while other scoring functions exhibited diverse results, potentially influenced by structural modeling uncertainties during protein structure prediction.",
+      "blocks": [
+        {
+          "type": "bars",
+          "unit": "%",
+          "max": 80,
+          "items": [
+            {"label": "찍어서 맞힐 확률", "value": 50, "display": "50%", "tone": "muted"},
+            {"label": "RF-Score v1 (최고)", "value": 54, "display": "≈54%", "highlight": true},
+            {"label": "참고: RF-Score v2 · X-ray (그림 3)", "value": 72, "display": "≈72%", "tone": "muted"}
+          ]
+        }
+      ],
+      "what": "실제 사용 상황처럼 구조 예측부터 도킹, 재채점까지 GDEE 전체를 돌렸을 때의 성적입니다. 이 논문에서 가장 현실적인 결과입니다.",
+      "how_to_read": [
+        "그림 3과 같은 형식이므로 50% 선을 기준으로 봅니다.",
+        "가장 높은 막대(RF-Score v1)가 50%에서 얼마나 떨어져 있는지, 오차막대가 50%를 포함하는지 확인합니다.",
+        "그림 3의 X-ray 결과와 나란히 놓고, 같은 함수가 얼마나 떨어졌는지 비교합니다."
+      ],
+      "findings": [
+        "RF-Score v1이 약 54%로 가장 높았다.",
+        "그림 3에서 X-ray 기준 72%였던 수준에 비해 크게 낮아졌다.",
+        "저자들은 이 성적이 무작위보다 ‘조금’ 높을 뿐이라고 직접 밝힌다."
+      ],
+      "meaning": "GDEE는 개별 돌연변이가 성공할지 예측하는 도구로는 아직 부족합니다. 하지만 수천 개 후보 중 좋은 후보가 조금이라도 더 많이 위로 올라오게 하는 ‘농축’ 효과는 실험 비용을 줄이는 데 의미가 있다고 저자들은 봅니다.",
+      "caveat": "오차가 어디서 생겼는지(구조 예측, 단단한 단백질 가정, 포즈 선택, 점수) 단계별로 나눠 분석하지는 않았습니다. 저자들의 설명은 추정입니다."
+    },
+    {
+      "id": "tbl1",
+      "label": "Table 1",
+      "kind": "표",
+      "missing_note": false,
+      "title_ko": "메타모델 구성과 가중치",
+      "caption": "Composition and Relative Weights of the Five Base Models in the Optimized Stacking Ensemble Metamodel. β0 2.259; Rf-Score v1 –0.903; Rf-Score v2 2.206; PLECrf –0.178; PLEClinear –0.057; Vinardo 0.056.",
+      "blocks": [
+        {
+          "type": "table",
+          "headers": ["구성 요소", "가중치"],
+          "rows": [["β0 (절편)", "2.259"], ["Rf-Score v1", "−0.903"], ["Rf-Score v2", "2.206"], ["PLECrf", "−0.178"], ["PLEClinear", "−0.057"], ["Vinardo", "0.056"]]
+        }
+      ],
+      "what": "최적 메타모델 = 2.259 + 2.206×(RF-Score v2) − 0.903×(RF-Score v1) − 0.178×(PLECrf) − 0.057×(PLEClinear) + 0.056×(Vinardo) 형태의 선형 결합입니다.",
+      "findings": ["RF-Score v2의 비중이 압도적이다.", "고전 함수 중에서는 Vinardo 하나만 작은 가중치로 들어갔다."],
+      "meaning": "그림 4의 가중치 막대그래프와 같은 내용입니다. 메타모델은 사실상 ‘RF-Score v2에 다른 모델로 약간 보정한 것’으로 읽을 수 있습니다."
+    }
+  ],
+  "critique": {
+    "strengths": [
+      "여러 해 써 온 도구를 정리해 **누구나 쓸 수 있게 공개**했다.",
+      "점수 함수 11개를 같은 기준으로 비교했고, 신뢰구간(부트스트랩 10,000회)을 함께 보고했다.",
+      "데이터 누수를 줄인 leak-proof 분할을 쓰고, 테스트 세트를 끝까지 건드리지 않았다.",
+      "성적이 낮은 결과(전체 파이프라인 54%)도 숨기지 않고, 해석의 한계를 직접 적었다."
+    ],
+    "limitations": [
+      "실제 사용 조건에서 돌연변이 효과 예측이 **무작위보다 조금 나은 수준**이다.",
+      "결합 친화도는 촉매 효율의 대리 지표일 뿐이다. kcat이나 전이 상태 안정화는 다루지 않는다.",
+      "단백질을 단단하다고 가정하고, 리간드 없이 만든 상동성 모델을 쓴다.",
+      "ML 함수는 실험 구조로 학습되어 예측 구조에 약하다.",
+      "성공 사례로 든 실제 적용 중 출판된 것은 두 건이고, 나머지는 ‘곧 나올’ 예정이다.",
+      "평가는 ΔΔG의 부호만 보고, 효소 활성을 직접 측정한 실험 검증은 이 논문에 없다."
+    ],
+    "easy": "한마디로 **설계가 잘된 도구 논문이고 결과 보고도 정직하지만, 예측력 자체는 아직 약하다**고 평가할 수 있습니다. 보고서에 쓸 때 ‘컴퓨터가 좋은 효소를 찾아 준다’고 쓰면 과장이고, ‘실험 전에 후보를 줄이는 데 쓴다’가 정확합니다."
+  },
+  "glossary": [
+    {"term": "효소 공학", "en": "enzyme engineering", "desc": "아미노산을 바꿔 효소의 성질(속도, 선택성, 안정성)을 개량하는 일."},
+    {"term": "유전자 발굴", "en": "gene discovery", "desc": "자연에 있는 비슷한 효소들 중 원하는 반응을 잘할 것 같은 것을 찾는 일."},
+    {"term": "율속 단계", "en": "rate-limiting step", "desc": "여러 단계 반응 중 가장 느려서 전체 속도를 정하는 단계."},
+    {"term": "촉매 효율", "en": "kcat/Km", "desc": "효소가 얼마나 빠르고(kcat) 기질을 얼마나 잘 잡는지(Km)를 합친 지표. 클수록 좋다."},
+    {"term": "상동성 모델링", "en": "homology modeling", "desc": "구조를 아는 비슷한 단백질을 틀로 삼아 새 서열의 3D 구조를 예측하는 방법."},
+    {"term": "분자 도킹", "en": "molecular docking", "desc": "작은 분자(리간드)가 단백질의 어느 자리에 어떤 자세로 얼마나 세게 붙는지 계산으로 찾는 방법."},
+    {"term": "포즈", "en": "pose", "desc": "도킹에서 리간드가 단백질에 붙어 있는 자세 하나."},
+    {"term": "점수 함수", "en": "scoring function", "desc": "포즈의 결합 세기를 숫자로 매기는 공식. Vina 같은 고전 함수와 RF-Score 같은 ML 함수가 있다."},
+    {"term": "결합 자유에너지", "en": "ΔG", "desc": "결합의 세기. 더 음수일수록 더 세게 붙는다."},
+    {"term": "ΔΔG", "desc": "변이체와 야생형의 ΔG 차이. 부호가 돌연변이가 결합을 좋게 했는지 나쁘게 했는지를 알려 준다."},
+    {"term": "RMSD 2 Å", "desc": "예측한 포즈와 실제 결정 구조 포즈의 평균 원자 거리 차이가 2 옹스트롬 이내면 ‘맞혔다’고 보는 관례적 기준."},
+    {"term": "스태킹 앙상블", "en": "stacking", "desc": "여러 모델의 예측값을 입력으로 받아 최종 예측을 내는 상위 모델을 두는 방법."},
+    {"term": "데이터 누수", "en": "data leakage", "desc": "시험 문제와 비슷한 자료가 학습에 섞여 성능이 부풀려지는 문제."},
+    {"term": "부트스트랩 신뢰구간", "desc": "자료를 복원추출로 여러 번 다시 뽑아 결과가 얼마나 흔들리는지로 구한 구간."}
+  ],
+  "quiz": [
+    {"q": "GDEE는 촉매 효율을 직접 계산하나요?", "a": "아니요. 계산이 너무 무거워서 **결합 친화도를 대리 지표**로 씁니다. 저자들은 결합이 좋아져도 촉매가 좋아진다는 보장은 없다고 밝힙니다."},
+    {"q": "도킹 자세 찾기와 결합 세기 예측에서 각각 어떤 점수 함수가 나았나요?", "a": "자세 찾기는 Vina(54%)가, 결합 세기 예측은 ML 함수(특히 RF-Score v2)가 나았습니다. 그래서 ‘Vina로 포즈, ML로 재채점’을 권합니다."},
+    {"q": "돌연변이 효과 부호 예측에서 50%가 중요한 기준인 이유는?", "a": "좋아짐/나빠짐 두 가지 중 하나를 맞히는 문제라 무작위로 찍어도 50%이기 때문입니다. 고전 함수는 약 50%였습니다."},
+    {"q": "RF-Score v2가 X-ray에서는 72%인데 플랫폼 전체에서는 왜 성적이 떨어질까요?", "a": "실제 플랫폼은 예측 구조, 단단한 단백질 도킹, 포즈 선택을 거치며 오차가 쌓이고, ML 함수는 실험 구조로만 학습해서 예측 구조에 익숙하지 않기 때문이라고 저자들은 봅니다. 전체 파이프라인 최고 성적은 RF-Score v1의 약 54%였습니다."}
+  ],
+  "relevance": {
+    "summary": "`profile/my-projects.md` 가 아직 비어 있어서 보고서·과제 주제와의 연관도는 매기지 못했습니다. 지금 알고 있는 내 프로젝트(GitHub의 Paper Reader)와, 어떤 보고서에서든 쓸 수 있는 활용법을 먼저 정리했습니다. 보고서나 프로젝트 주제를 알려 주시면 이 섹션을 다시 만들어 드립니다.",
+    "projects": [
+      {
+        "name": "Paper Reader (내 GitHub 프로젝트)",
+        "fit": 2,
+        "why": "주제(효소)는 다르지만, GDEE는 **여러 단계를 자동으로 잇는 파이프라인 소프트웨어**라서 설계 면에서 참고할 점이 있습니다. Paper Reader도 가져오기 → 읽기 → 리포트 생성으로 이어지는 파이프라인입니다.",
+        "use": [
+          "**비싼 단계 앞에 품질 검사 두기**: GDEE는 구조를 3배 만들고 나쁜 것을 버린 뒤 도킹합니다. Paper Reader도 본문이나 그림이 빠진 논문을 리포트 작성 전에 걸러 알려 주는 단계를 더 분명히 할 수 있습니다.",
+          "**중간 결과 저장**: GDEE는 SQLite에 모든 단계를 저장해 재분석합니다. 읽은 논문이 쌓이면 `library/` 의 JSON을 모아 키워드나 프로젝트별로 검색하는 기능을 생각해 볼 수 있습니다.",
+          "**결과를 정직하게 보고하기**: 이 논문처럼 리포트에도 ‘무엇을 확인 못 했는지’를 함께 적는 것이 신뢰도를 높입니다."
+        ]
+      },
+      {
+        "name": "생명과학·화학·AI 보고서 공통 활용",
+        "why": "효소 공학, 합성생물학, 신약 개발, 생명과학에서의 머신러닝을 다루는 보고서라면 근거나 사례로 쓸 수 있습니다.",
+        "use": [
+          "서론: 효소 개량 실험은 조합이 너무 많아 컴퓨터로 먼저 거른다는 배경 설명",
+          "본론: ‘AI가 모든 걸 해결한다’에 대한 반례. 정답 구조에서는 72%지만 실제 파이프라인에서는 약 54%",
+          "방법론 비교: QM → MM → 도킹으로 갈수록 빠르지만 덜 정확하다는 계산 방법의 절충 관계"
+        ],
+        "cite_as": [
+          "구조 기반 효소 공학 플랫폼 GDEE에서 머신러닝 점수 함수는 실험 구조에서 돌연변이의 결합 효과 방향을 약 72%까지 맞혔지만, 구조 예측과 도킹을 모두 거친 전체 파이프라인에서는 최고 약 54%에 그쳤다(Souza et al., 2026).",
+          "따라서 이러한 계산 도구는 개별 변이의 성공 여부를 예측하기보다 실험 전에 후보군을 줄이는 우선순위 도구로 활용하는 것이 적절하다(Souza et al., 2026)."
+        ]
+      }
+    ],
+    "next": [
+      "지금 하는 보고서나 프로젝트 주제를 알려 주기 (이 섹션을 맞춤으로 다시 만듦)",
+      "원본 그림을 보려면 [PMC 원문](https://pmc.ncbi.nlm.nih.gov/articles/PMC13663853/) 열기, 또는 환경 설정에서 펍메드 도메인 허용",
+      "2026년 10월에 나온 최신 논문이라 PubMed에 아직 연관 논문이 연결되지 않았습니다. 비교 대상으로 본문에 나온 Rosetta, FoldX, AutoDock Vina 논문을 찾아볼 수 있습니다."
+    ]
+  },
+  "source_note": "본문, 그림 캡션, 표 수치는 PubMed(PMC 전문)에서 가져왔습니다. 이 세션의 네트워크 설정이 논문 그림 서버를 막아 원본 그림 이미지는 넣지 못했고, 그래프는 본문에 적힌 수치로만 다시 그렸습니다. ≈ 표시는 본문이 ‘약’, ‘around’로 보고한 값입니다."
+}

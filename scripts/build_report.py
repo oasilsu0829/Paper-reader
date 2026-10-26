@@ -85,6 +85,11 @@ def nice_step(span, target=5):
     return 10 * mag
 
 
+def text_width(s, size=13):
+    """SVG 글자 폭 어림값 (한글은 글자 크기만큼, 라틴 문자는 그 절반 남짓)."""
+    return sum(size if ord(c) > 0x1100 else size * 0.58 for c in s)
+
+
 def fmt_num(v):
     if abs(v - round(v)) < 1e-9:
         return str(int(round(v)))
@@ -105,7 +110,8 @@ def block_bars(b):
     hi = math.ceil(hi / step - 1e-9) * step
     unit = b.get("unit", "")
     longest = max(len(str(i.get("display") or (fmt_num(float(i["value"])) + unit))) for i in items)
-    W, LW, ROW, TOP = 640, 196, 30, 6
+    W, ROW, TOP = 640, 30, 6
+    LW = min(270, max(110, max(text_width(str(i.get("label", ""))) for i in items) + 18))
     VW = max(64, 16 + 7 * longest)
     x0, x1 = LW, W - VW
     H = TOP + ROW * len(items) + 26
@@ -127,7 +133,9 @@ def block_bars(b):
         xa, xb = sorted((X(0), X(v)))
         tone = it.get("tone") or ("" if (it.get("highlight") or not any_hl) else "muted")
         label = str(it.get("label", ""))
-        short = label if len(label) <= 15 else label[:14] + "…"
+        short = label
+        while text_width(short) > LW - 14 and len(short) > 2:
+            short = short[:-2] + "…"
         parts.append(f'<g><title>{esc(label)}: {esc(fmt_num(v))}{esc(unit)}{(" · " + esc(it["note"])) if it.get("note") else ""}</title>')
         parts.append(f'<text class="lbl" x="{LW - 10}" y="{y + ROW / 2 + 4.5:.1f}" text-anchor="end">{esc(short)}</text>')
         parts.append(f'<rect class="bar {tone}" x="{xa:.1f}" y="{y + 6}" width="{max(xb - xa, 1.5):.1f}" height="{ROW - 12}" rx="2"/>')
