@@ -177,16 +177,6 @@ dialog.lightbox::backdrop { background: rgba(10, 14, 18, .86); }
 .lb-inner img { max-width: 100%; max-height: calc(100vh - 80px); background: #fff; border-radius: 4px; }
 .lb-close { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 12px); right: calc(env(safe-area-inset-right, 0px) + 12px); font: inherit; background: #fff; color: #18212b; border: 0; border-radius: 99px; padding: 6px 14px; cursor: pointer; }
 
-/* ---------- 용어, 퀴즈 */
-.gloss { display: grid; grid-template-columns: minmax(0, 11em) minmax(0, 1fr); gap: 0; margin: 18px 0; border-top: 1px solid var(--rule); }
-.gloss dt, .gloss dd { margin: 0; padding: 10px 0; border-bottom: 1px solid var(--rule); }
-.gloss dt { font-weight: 600; padding-right: 14px; }
-.gloss dt small { display: block; font-weight: 400; font-family: var(--font-mono); font-size: .72rem; color: var(--ink-2); }
-.gloss dd { font-size: .95rem; }
-.quiz details { border-bottom: 1px solid var(--rule); padding: 10px 0; margin: 0; }
-.quiz summary { color: var(--ink); font-size: var(--step-0); font-weight: 600; }
-.quiz details p { margin: 6px 0 0; }
-
 /* ---------- 내 프로젝트 연관성 */
 .proj { margin: 18px 0; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 16px 18px; }
 .proj-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; }
@@ -210,9 +200,6 @@ footer p { margin: 6px 0; }
   .toc a.on { border-bottom-color: var(--accent); }
   .mode-box { order: 2; }
   section { scroll-margin-top: 64px; }
-  .gloss { grid-template-columns: minmax(0, 1fr); }
-  .gloss dd { padding-top: 0; }
-  .gloss dt { border-bottom: 0; padding-bottom: 2px; }
 }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 </style>

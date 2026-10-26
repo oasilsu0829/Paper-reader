@@ -3,7 +3,16 @@
   "meta": {
     "title": "Positive Psychological Factors and Life Themes in Relation to Health Outcomes in Women Living with HIV",
     "title_ko": "HIV와 함께 사는 여성들의 긍정적 심리 요인과 삶의 주제, 그리고 건강",
-    "authors": ["Leslie R Brody", "Yudelki Firpo-Perretti", "Dana Bruck-Segal", "Sannisha K Dale", "Elizabeth G Ruffing", "Clair Cassiello-Robbins", "Kathleen M Weber", "Mardge H Cohen"],
+    "authors": [
+      "Leslie R Brody",
+      "Yudelki Firpo-Perretti",
+      "Dana Bruck-Segal",
+      "Sannisha K Dale",
+      "Elizabeth G Ruffing",
+      "Clair Cassiello-Robbins",
+      "Kathleen M Weber",
+      "Mardge H Cohen"
+    ],
     "journal": "International Journal of Behavioral Medicine",
     "year": "2021",
     "pmid": "34713412",
@@ -11,7 +20,13 @@
     "doi": "10.1007/s12529-021-10032-y",
     "url": "https://pubmed.ncbi.nlm.nih.gov/34713412/",
     "read_date": "2026-10-26",
-    "tags": ["혼합연구", "n=98", "자서전 내러티브 코딩", "편상관 · 매개분석", "예시 리포트"]
+    "tags": [
+      "혼합연구",
+      "n=98",
+      "자서전 내러티브 코딩",
+      "편상관 · 매개분석",
+      "예시 리포트"
+    ]
   },
   "tldr": "HIV와 함께 사는 흑인 여성 98명의 인생 이야기를 분석했더니, ==수용, 통찰, 마음챙김 같은 긍정 요인을 많이 쓴 사람일수록 우울 증상이 낮았다==. 다만 상관관계라서 원인과 결과는 알 수 없다.",
   "overview": {
@@ -23,11 +38,31 @@
       "그러나 긍정 요인 → 성취 → 우울 감소라는 매개 경로는 통계적으로 확인되지 않았다."
     ],
     "stats": [
-      {"value": "98명", "label": "참여자", "note": "HIV와 함께 사는 여성, 시카고"},
-      {"value": "45.3세", "label": "평균 나이", "note": "표준편차 8.87"},
-      {"value": "90.8%", "label": "아프리카계 미국인", "note": "히스패닉 4.1% 추가"},
-      {"value": "86.7%", "label": "신체·성적 학대 경험", "note": "평생 한 번 이상 보고"},
-      {"value": "2회", "label": "건강 측정", "note": "이야기 녹음 때와 약 6개월 뒤"}
+      {
+        "value": "98명",
+        "label": "참여자",
+        "note": "HIV와 함께 사는 여성, 시카고"
+      },
+      {
+        "value": "45.3세",
+        "label": "평균 나이",
+        "note": "표준편차 8.87"
+      },
+      {
+        "value": "90.8%",
+        "label": "아프리카계 미국인",
+        "note": "히스패닉 4.1% 추가"
+      },
+      {
+        "value": "86.7%",
+        "label": "신체·성적 학대 경험",
+        "note": "평생 한 번 이상 보고"
+      },
+      {
+        "value": "2회",
+        "label": "건강 측정",
+        "note": "이야기 녹음 때와 약 6개월 뒤"
+      }
     ]
   },
   "sections": [
@@ -56,21 +91,52 @@
           "type": "flow",
           "title": "연구 흐름",
           "steps": [
-            {"title": "98명 모집", "desc": "WIHS 시카고, HIV 감염 여성"},
-            {"title": "인생 전환점 3개 녹음", "desc": "자서전 이야기 과제"},
-            {"title": "8명이 코딩", "desc": "긍정 요인 0~3점, 삶의 주제 있음/없음"},
-            {"title": "건강 지표 2회", "desc": "녹음 때와 평균 5.7개월 뒤"},
-            {"title": "편상관 · 매개분석", "desc": "단어 수, 학력, 나이 통제"}
+            {
+              "title": "98명 모집",
+              "desc": "WIHS 시카고, HIV 감염 여성"
+            },
+            {
+              "title": "인생 전환점 3개 녹음",
+              "desc": "자서전 이야기 과제"
+            },
+            {
+              "title": "8명이 코딩",
+              "desc": "긍정 요인 0~3점, 삶의 주제 있음/없음"
+            },
+            {
+              "title": "건강 지표 2회",
+              "desc": "녹음 때와 평균 5.7개월 뒤"
+            },
+            {
+              "title": "편상관 · 매개분석",
+              "desc": "단어 수, 학력, 나이 통제"
+            }
           ]
         },
         {
           "type": "table",
           "title": "건강 지표를 어떻게 쟀나",
-          "headers": ["지표", "측정", "기준"],
+          "headers": [
+            "지표",
+            "측정",
+            "기준"
+          ],
           "rows": [
-            ["우울 증상", "CES-D 20문항 설문", "총점과 4개 하위요인 (NA, PA, SS, IP)"],
-            ["복약 순응도", "지난 6개월 자기보고", "95% 이상 복용"],
-            ["바이러스 부하", "혈액 검사 (NASBA)", "80 copies/mL 미만 = 미검출"]
+            [
+              "우울 증상",
+              "CES-D 20문항 설문",
+              "총점과 4개 하위요인 (NA, PA, SS, IP)"
+            ],
+            [
+              "복약 순응도",
+              "지난 6개월 자기보고",
+              "95% 이상 복용"
+            ],
+            [
+              "바이러스 부하",
+              "혈액 검사 (NASBA)",
+              "80 copies/mL 미만 = 미검출"
+            ]
           ],
           "caption": "두 시점이 서로 강하게 관련되어 있어(예: CES-D 총점 r = .54) 두 시점을 합친 점수를 썼다."
         }
@@ -87,13 +153,44 @@
           "type": "bars",
           "title": "긍정 요인 평균 점수와 각 건강 지표의 편상관 (r)",
           "items": [
-            {"label": "신체 증상 (SS)", "value": -0.33, "display": "−.33***"},
-            {"label": "우울 총점 (TOT)", "value": -0.30, "display": "−.30**"},
-            {"label": "대인관계 문제 (IP)", "value": -0.26, "display": "−.26*"},
-            {"label": "부정 정서 (NA)", "value": -0.25, "display": "−.25*"},
-            {"label": "긍정 정서 (PA)", "value": 0.12, "display": ".12 n.s.", "tone": "muted"},
-            {"label": "복약 순응도", "value": 0.20, "display": ".20 (p<.06)", "tone": "muted"},
-            {"label": "바이러스 미검출", "value": 0.13, "display": ".13 n.s.", "tone": "muted"}
+            {
+              "label": "신체 증상 (SS)",
+              "value": -0.33,
+              "display": "−.33***"
+            },
+            {
+              "label": "우울 총점 (TOT)",
+              "value": -0.3,
+              "display": "−.30**"
+            },
+            {
+              "label": "대인관계 문제 (IP)",
+              "value": -0.26,
+              "display": "−.26*"
+            },
+            {
+              "label": "부정 정서 (NA)",
+              "value": -0.25,
+              "display": "−.25*"
+            },
+            {
+              "label": "긍정 정서 (PA)",
+              "value": 0.12,
+              "display": ".12 n.s.",
+              "tone": "muted"
+            },
+            {
+              "label": "복약 순응도",
+              "value": 0.2,
+              "display": ".20 (p<.06)",
+              "tone": "muted"
+            },
+            {
+              "label": "바이러스 미검출",
+              "value": 0.13,
+              "display": ".13 n.s.",
+              "tone": "muted"
+            }
           ],
           "caption": "본문 수치로 다시 그림. 왼쪽(음수)은 긍정 요인이 많을수록 그 증상이 적다는 뜻. 회색은 통계적으로 유의하지 않음. \\* p<.05, \\*\\* p<.01, \\*\\*\\* p<.001"
         },
@@ -102,12 +199,32 @@
           "title": "두 시점의 복약 순응도와 바이러스 상태 (명)",
           "unit": "명",
           "items": [
-            {"label": "순응 95%↑ 두 번 모두", "value": 53, "highlight": true},
-            {"label": "순응 95%↑ 한 번만", "value": 22},
-            {"label": "순응 95%↑ 한 번도 없음", "value": 22},
-            {"label": "바이러스 미검출 두 번", "value": 48, "highlight": true},
-            {"label": "바이러스 미검출 한 번", "value": 13},
-            {"label": "두 번 모두 검출", "value": 37}
+            {
+              "label": "순응 95%↑ 두 번 모두",
+              "value": 53,
+              "highlight": true
+            },
+            {
+              "label": "순응 95%↑ 한 번만",
+              "value": 22
+            },
+            {
+              "label": "순응 95%↑ 한 번도 없음",
+              "value": 22
+            },
+            {
+              "label": "바이러스 미검출 두 번",
+              "value": 48,
+              "highlight": true
+            },
+            {
+              "label": "바이러스 미검출 한 번",
+              "value": 13
+            },
+            {
+              "label": "두 번 모두 검출",
+              "value": 37
+            }
           ],
           "caption": "결과 지표를 0, 1, 2점으로 만든 근거. 바이러스가 두 번 모두 검출된 사람이 37명으로 적지 않다."
         },
@@ -115,11 +232,23 @@
           "type": "flow",
           "title": "검증한 매개 모델 (목표 4)",
           "steps": [
-            {"title": "긍정 요인", "desc": "10가지 평균 점수"},
-            {"title": "성취 주제", "desc": "취업, 졸업 등"},
-            {"title": "우울 감소", "desc": "CES-D 총점"}
+            {
+              "title": "긍정 요인",
+              "desc": "10가지 평균 점수"
+            },
+            {
+              "title": "성취 주제",
+              "desc": "취업, 졸업 등"
+            },
+            {
+              "title": "우울 감소",
+              "desc": "CES-D 총점"
+            }
           ],
-          "edges": ["?", "?"],
+          "edges": [
+            "?",
+            "?"
+          ],
           "caption": "간접효과 −1.73, 95% CI [−7.45, 1.76]로 0을 포함해 유의하지 않음. 긍정 요인 → 우울의 직접효과(−11.89, p = .01)는 남아 있었다."
         }
       ]
@@ -144,13 +273,47 @@
         {
           "type": "bars",
           "items": [
-            {"label": "긍정 요인 평균", "value": -0.30, "display": "−.30**", "highlight": true},
-            {"label": "수용", "value": -0.29, "display": "−.29**", "highlight": true},
-            {"label": "통찰", "value": -0.25, "display": "−.25*", "highlight": true},
-            {"label": "마음챙김", "value": -0.21, "display": "−.21*", "highlight": true},
-            {"label": "자립", "value": -0.21, "display": "−.21*", "highlight": true},
-            {"label": "의미 찾기", "value": -0.20, "display": "−.20*", "highlight": true},
-            {"label": "낙관", "value": -0.18, "display": "−.18 (p<.08)"}
+            {
+              "label": "긍정 요인 평균",
+              "value": -0.3,
+              "display": "−.30**",
+              "highlight": true
+            },
+            {
+              "label": "수용",
+              "value": -0.29,
+              "display": "−.29**",
+              "highlight": true
+            },
+            {
+              "label": "통찰",
+              "value": -0.25,
+              "display": "−.25*",
+              "highlight": true
+            },
+            {
+              "label": "마음챙김",
+              "value": -0.21,
+              "display": "−.21*",
+              "highlight": true
+            },
+            {
+              "label": "자립",
+              "value": -0.21,
+              "display": "−.21*",
+              "highlight": true
+            },
+            {
+              "label": "의미 찾기",
+              "value": -0.2,
+              "display": "−.20*",
+              "highlight": true
+            },
+            {
+              "label": "낙관",
+              "value": -0.18,
+              "display": "−.18 (p<.08)"
+            }
           ],
           "caption": "CES-D 총점과의 편상관. 강조색 = p < .05, 회색 = 유의하지 않음. 본문 결과 단락의 수치."
         }
@@ -181,15 +344,52 @@
         {
           "type": "bars",
           "items": [
-            {"label": "감사 · 좋은 관계", "value": 0.41, "display": ".41***", "highlight": true},
-            {"label": "긍정 요인 평균 · 성취", "value": 0.31, "display": ".31**"},
-            {"label": "연민 · 좋은 관계", "value": 0.29, "display": ".29**"},
-            {"label": "자립 · 성취", "value": 0.28, "display": ".28**"},
-            {"label": "마음챙김 · 건강 회복", "value": 0.27, "display": ".27**"},
-            {"label": "긍정 요인 평균 · 건강 회복", "value": 0.26, "display": ".26*"},
-            {"label": "긍정 요인 평균 · 좋은 관계", "value": 0.24, "display": ".24*"},
-            {"label": "감사 · 성취", "value": 0.24, "display": ".24*"},
-            {"label": "감사 · 건강 회복", "value": 0.24, "display": ".24**"}
+            {
+              "label": "감사 · 좋은 관계",
+              "value": 0.41,
+              "display": ".41***",
+              "highlight": true
+            },
+            {
+              "label": "긍정 요인 평균 · 성취",
+              "value": 0.31,
+              "display": ".31**"
+            },
+            {
+              "label": "연민 · 좋은 관계",
+              "value": 0.29,
+              "display": ".29**"
+            },
+            {
+              "label": "자립 · 성취",
+              "value": 0.28,
+              "display": ".28**"
+            },
+            {
+              "label": "마음챙김 · 건강 회복",
+              "value": 0.27,
+              "display": ".27**"
+            },
+            {
+              "label": "긍정 요인 평균 · 건강 회복",
+              "value": 0.26,
+              "display": ".26*"
+            },
+            {
+              "label": "긍정 요인 평균 · 좋은 관계",
+              "value": 0.24,
+              "display": ".24*"
+            },
+            {
+              "label": "감사 · 성취",
+              "value": 0.24,
+              "display": ".24*"
+            },
+            {
+              "label": "감사 · 건강 회복",
+              "value": 0.24,
+              "display": ".24**"
+            }
           ],
           "caption": "목표 2 결과 단락의 편상관. 모두 p < .05."
         }
@@ -207,41 +407,6 @@
       "meaning": "저자들은 긍정 요인과 좋은 삶의 경험이 서로를 키우는 **상승 나선**(upward spiral)일 수 있다고 봅니다. 감사하는 마음이 관계를 좋게 하고, 좋은 관계가 다시 감사할 일을 만드는 식입니다.",
       "caveat": "같은 이야기에서 두 가지를 동시에 코딩했기 때문에, 이야기를 길고 풍부하게 하는 사람이 둘 다 높게 나올 수 있습니다. 연구팀은 이를 줄이려고 단어 수를 통제했습니다."
     }
-  ],
-  "critique": {
-    "strengths": [
-      "설문 대신 **본인의 인생 이야기**를 분석해서 실제 삶에 가까운 자료를 썼다.",
-      "연구에서 잘 다뤄지지 않던 집단(가난, 트라우마를 겪은 흑인 HIV 여성)을 대상으로 했다.",
-      "건강 지표를 두 시점에서 쟀고, 바이러스 부하는 혈액 검사라는 객관적 지표다.",
-      "코더 8명, 두 그룹 간 신뢰도 확인, 코더는 건강 결과를 모르게 했다."
-    ],
-    "limitations": [
-      "**상관관계 연구**라 인과 방향을 알 수 없다 (저자들도 첫 번째 한계로 꼽음).",
-      "98명으로 작은 표본이고 한 도시 한 코호트다.",
-      "13개 요인·주제를 여러 결과와 비교해서 **우연히 유의하게 나온 결과**가 섞였을 수 있다.",
-      "복약 순응도는 자기보고라 실제보다 좋게 답했을 수 있다.",
-      "이야기할 때의 기분이 이야기 내용에 영향을 줬을 수 있다."
-    ]
-  },
-  "glossary": [
-    {"term": "혼합연구", "en": "mixed methods", "desc": "인터뷰나 이야기 같은 질적 자료와 숫자로 된 양적 자료를 함께 쓰는 연구 방식."},
-    {"term": "주제 분석", "en": "thematic analysis", "desc": "글이나 이야기에서 반복되는 주제를 찾아 분류하는 질적 분석 방법."},
-    {"term": "평가자 간 신뢰도", "en": "inter-rater reliability", "desc": "여러 사람이 따로 채점해도 같은 결과가 나오는 정도. 이 연구는 Kendall tau-b 상관으로 확인."},
-    {"term": "항레트로바이러스 치료", "en": "ART", "desc": "HIV 증식을 억제하는 약물 치료. 꾸준히 먹어야 효과가 유지된다."},
-    {"term": "복약 순응도", "en": "adherence", "desc": "처방대로 약을 먹는 정도. 이 연구는 95% 이상을 기준으로 삼았다."},
-    {"term": "바이러스 부하", "en": "viral load", "desc": "혈액 1mL 속 HIV 양. 80 copies/mL 미만이면 ‘미검출’로 봤다."},
-    {"term": "CES-D", "en": "Center for Epidemiologic Studies Depression Scale", "desc": "20문항 우울 증상 설문. 점수가 높을수록 우울 증상이 많다."},
-    {"term": "편상관", "en": "partial correlation", "desc": "나이, 학력 같은 다른 변수의 영향을 빼고 두 변수의 관계만 본 상관계수."},
-    {"term": "매개분석", "en": "mediation analysis", "desc": "A가 B를 거쳐 C에 영향을 주는지(A → B → C) 확인하는 분석."},
-    {"term": "부트스트랩", "en": "bootstrapping", "desc": "자료를 여러 번(여기선 5,000번) 다시 뽑아 결과의 신뢰구간을 추정하는 방법."},
-    {"term": "확장-구축 이론", "en": "broaden-and-build theory", "desc": "긍정 정서가 생각의 폭을 넓히고 개인적, 사회적 자원을 쌓아 준다는 프레드릭슨의 이론."},
-    {"term": "PERMA", "desc": "긍정 정서, 몰입, 관계, 의미, 성취. 셀리그만이 제시한 행복한 삶의 다섯 요소."}
-  ],
-  "quiz": [
-    {"q": "긍정 요인 평균과 우울 총점의 상관 r = −.30은 무슨 뜻인가요?", "a": "긍정 요인을 많이 쓴 사람일수록 우울 점수가 낮은 **중간 정도의 관계**라는 뜻입니다. 원인과 결과를 뜻하지는 않습니다."},
-    {"q": "긍정 요인은 긍정 정서(행복감)도 높였나요?", "a": "아니요. 긍정 정서(PA)와의 상관은 .12로 유의하지 않았습니다. 저자들은 행복감이 계속되는 스트레스나 사회적 지지에 더 좌우될 수 있다고 해석합니다."},
-    {"q": "‘성취’ 주제가 바이러스 미검출과 관련된 것이 약을 잘 먹어서일까요?", "a": "논문에 따르면 아닙니다. 복약 순응도를 통제해도 관계(r = .22)가 그대로였습니다."},
-    {"q": "매개분석 결과를 한 문장으로 말하면?", "a": "긍정 요인이 ‘성취’를 거쳐 우울을 낮춘다는 경로는 확인되지 않았습니다. 간접효과의 95% 신뢰구간 [−7.45, 1.76]이 0을 포함하기 때문입니다."}
   ],
   "relevance": {
     "summary": "`profile/my-projects.md` 가 아직 비어 있어서, 프로젝트별 연관도는 계산하지 못했습니다. 지금 하는 보고서나 프로젝트를 알려 주시면 이 자리에 프로젝트마다 연관도, 활용법, 인용 문장이 들어갑니다. 아래는 어떤 주제에서든 쓸 수 있는 일반적인 활용법입니다.",

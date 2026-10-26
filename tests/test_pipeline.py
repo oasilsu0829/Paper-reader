@@ -85,6 +85,24 @@ class Report(unittest.TestCase):
         for sid in ("overview", "figures", "relevance"):
             self.assertIn(f'id="{sid}"', html)
 
+    def test_merge_paper_fills_meta_caption_and_table(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            paper = {"ids": {"pmid": "1", "doi": "10.1/x"}, "url": "https://pubmed.ncbi.nlm.nih.gov/1/",
+                     "meta": {"title": "T", "authors": ["A B"], "journal": "J", "year": "2024"},
+                     "fetched": "2026-01-01",
+                     "figures": [{"id": "F1", "label": "Figure 1", "caption": "cap", "image": "figures/F1.jpg"}],
+                     "tables": [{"id": "T1", "label": "Table 1", "caption": "tc", "rows": [["g", "n"], ["a", "1"]], "footnote": ""}]}
+            (d / "paper.json").write_text(json.dumps(paper))
+            rep = build_report.merge_paper({"meta": {"title_ko": "티"}, "figures": [{"label": "Figure 1"}],
+                                            "tables": [{"id": "T1"}]}, d)
+            self.assertEqual(rep["meta"]["doi"], "10.1/x")
+            self.assertEqual(rep["meta"]["title_ko"], "티")
+            self.assertEqual(rep["meta"]["read_date"], "2026-01-01")
+            self.assertEqual(rep["figures"][0]["caption"], "cap")
+            self.assertEqual(rep["figures"][0]["image"], "figures/F1.jpg")
+            self.assertEqual(rep["tables"][0]["blocks"][0]["rows"], [["a", "1"]])
+
     def test_missing_image_and_embed(self):
         with tempfile.TemporaryDirectory() as d:
             d = Path(d)

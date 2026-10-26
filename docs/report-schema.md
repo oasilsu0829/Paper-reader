@@ -4,6 +4,10 @@
 `**굵게**`, `*기울임*`, `==형광펜==`, `` `코드` ``, `[링크](https://...)`, 빈 줄로 문단 구분, `- ` 글머리표, `1. ` 번호 목록.
 필드는 대부분 선택이다. 없는 섹션은 리포트와 목차에서 빠진다.
 
+같은 폴더에 `paper.json`(fetch_paper.py 결과)이 있으면 `build_report.py` 가 다음을 자동으로 채운다. report.json 에 쓰지 않아도 된다.
+`meta` 의 title, authors, journal, year, pmid, pmcid, doi, url, read_date / 그림·표 카드의 caption, image, 표 숫자(blocks가 없을 때).
+카드는 `id` 나 `label` 이 paper.json 과 같아야 연결된다.
+
 ```jsonc
 {
   "page_title": "HIV 여성의 긍정 요인",        // 브라우저 탭과 갤러리 이름 (2~4단어)
@@ -54,9 +58,6 @@
     }
   ],
   "tables": [ /* figures 와 같은 형식. 보통 image 대신 blocks 에 table */ ],
-  "critique": { "strengths": ["..."], "limitations": ["..."], "easy": "...", "detail": "..." },
-  "glossary": [{"term": "우울 척도", "en": "CES-D", "desc": "..."}],
-  "quiz": [{"q": "질문", "a": "답과 근거"}],
   "relevance": {
     "title": "내 프로젝트에 어떻게 쓸까",
     "summary": "전체 요약",

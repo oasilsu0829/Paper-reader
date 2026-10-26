@@ -3,7 +3,13 @@
   "meta": {
     "title": "GDEE: A Structure-Based Platform for Gene Discovery and Enzyme Engineering",
     "title_ko": "GDEE: 구조 기반으로 효소를 찾고 개량하는 자동화 플랫폼",
-    "authors": ["Caio S Souza", "João P G Correia", "Isabel Rocha", "Diana Lousa", "Cláudio M Soares"],
+    "authors": [
+      "Caio S Souza",
+      "João P G Correia",
+      "Isabel Rocha",
+      "Diana Lousa",
+      "Cláudio M Soares"
+    ],
     "journal": "Journal of Chemical Information and Modeling",
     "year": "2026",
     "pmid": "42912922",
@@ -11,7 +17,13 @@
     "doi": "10.1021/acs.jcim.5c02688",
     "url": "https://pubmed.ncbi.nlm.nih.gov/42912922/",
     "read_date": "2026-10-26",
-    "tags": ["계산 생물학", "소프트웨어 플랫폼", "분자 도킹", "머신러닝 재채점", "벤치마크 260쌍"]
+    "tags": [
+      "계산 생물학",
+      "소프트웨어 플랫폼",
+      "분자 도킹",
+      "머신러닝 재채점",
+      "벤치마크 260쌍"
+    ]
   },
   "tldr": "효소 돌연변이 수천 개를 컴퓨터로 만들어 ‘기질에 더 잘 붙을 것 같은’ 후보를 골라 주는 파이프라인을 공개했다. 머신러닝 재채점이 결합 세기 예측을 개선했지만, ==전체 파이프라인에서 돌연변이 효과(좋아짐/나빠짐)를 맞힌 비율은 약 54%로 동전 던지기보다 조금 나은 수준==이라 실험 전 후보 줄이기 도구로 써야 한다.",
   "overview": {
@@ -23,11 +35,31 @@
       "그러나 구조 예측부터 도킹까지 전부 거치면 오차가 쌓여, 돌연변이 효과의 부호를 맞힌 최고 성적이 약 54%에 그쳤다."
     ],
     "stats": [
-      {"value": "4단계", "label": "파이프라인", "note": "서열 → 구조 → 도킹 → 평가"},
-      {"value": "8개", "label": "파이썬 모듈", "note": "SQLite 테이블 7개에 결과 저장"},
-      {"value": "4,482", "label": "단백질-리간드 복합체", "note": "PDBBind v2020 refined set"},
-      {"value": "260쌍", "label": "야생형-변이체 쌍", "note": "기준 단백질 187개"},
-      {"value": "≈54%", "label": "전체 파이프라인 최고 성적", "note": "RF-Score v1, 돌연변이 효과 부호 예측"}
+      {
+        "value": "4단계",
+        "label": "파이프라인",
+        "note": "서열 → 구조 → 도킹 → 평가"
+      },
+      {
+        "value": "8개",
+        "label": "파이썬 모듈",
+        "note": "SQLite 테이블 7개에 결과 저장"
+      },
+      {
+        "value": "4,482",
+        "label": "단백질-리간드 복합체",
+        "note": "PDBBind v2020 refined set"
+      },
+      {
+        "value": "260쌍",
+        "label": "야생형-변이체 쌍",
+        "note": "기준 단백질 187개"
+      },
+      {
+        "value": "≈54%",
+        "label": "전체 파이프라인 최고 성적",
+        "note": "RF-Score v1, 돌연변이 효과 부호 예측"
+      }
     ]
   },
   "sections": [
@@ -56,24 +88,61 @@
           "type": "flow",
           "title": "GDEE 파이프라인",
           "steps": [
-            {"title": "입력", "desc": "기준 효소 구조(PDB) + 리간드 구조(PDBQT)"},
-            {"title": "서열 생성", "desc": "돌연변이 조합 생성 또는 자연 서열(FASTA)"},
-            {"title": "3D 구조 예측", "desc": "Modeller 상동성 모델, 필요 수의 3배 생성"},
-            {"title": "품질 검사", "desc": "VoroMQA, DOPE로 나쁜 모델 제거"},
-            {"title": "도킹", "desc": "Vina/Smina, 단백질은 단단하다고 가정"},
-            {"title": "필터·순위", "desc": "원자 간 거리로 포즈 거르고 결합 에너지로 정렬"},
-            {"title": "(선택) ML 재채점", "desc": "스태킹 메타모델 등으로 점수 다시 매김"}
+            {
+              "title": "입력",
+              "desc": "기준 효소 구조(PDB) + 리간드 구조(PDBQT)"
+            },
+            {
+              "title": "서열 생성",
+              "desc": "돌연변이 조합 생성 또는 자연 서열(FASTA)"
+            },
+            {
+              "title": "3D 구조 예측",
+              "desc": "Modeller 상동성 모델, 필요 수의 3배 생성"
+            },
+            {
+              "title": "품질 검사",
+              "desc": "VoroMQA, DOPE로 나쁜 모델 제거"
+            },
+            {
+              "title": "도킹",
+              "desc": "Vina/Smina, 단백질은 단단하다고 가정"
+            },
+            {
+              "title": "필터·순위",
+              "desc": "원자 간 거리로 포즈 거르고 결합 에너지로 정렬"
+            },
+            {
+              "title": "(선택) ML 재채점",
+              "desc": "스태킹 메타모델 등으로 점수 다시 매김"
+            }
           ],
           "caption": "결과는 실험해 볼 변이체 후보의 우선순위 목록이다."
         },
         {
           "type": "table",
           "title": "구조 최적화 수준",
-          "headers": ["수준", "방식", "목적함수 평가 최대"],
+          "headers": [
+            "수준",
+            "방식",
+            "목적함수 평가 최대"
+          ],
           "rows": [
-            ["0", "빠른 최적화 + 짧은 MD", "100회"],
-            ["1", "표준 최적화 + 느린 MD", "200회"],
-            ["2", "광범위한 최적화", "300회"]
+            [
+              "0",
+              "빠른 최적화 + 짧은 MD",
+              "100회"
+            ],
+            [
+              "1",
+              "표준 최적화 + 느린 MD",
+              "200회"
+            ],
+            [
+              "2",
+              "광범위한 최적화",
+              "300회"
+            ]
           ]
         }
       ]
@@ -91,11 +160,33 @@
           "unit": "%",
           "max": 60,
           "items": [
-            {"label": "Vina", "value": 54, "display": "54%", "highlight": true},
-            {"label": "Smina", "value": 45, "display": "≈45%"},
-            {"label": "Vinardo", "value": 45, "display": "≈45%"},
-            {"label": "AD4", "value": 45, "display": "≈45%"},
-            {"label": "ML 모델 (최고치)", "value": 17, "display": "2~17%", "tone": "warn"}
+            {
+              "label": "Vina",
+              "value": 54,
+              "display": "54%",
+              "highlight": true
+            },
+            {
+              "label": "Smina",
+              "value": 45,
+              "display": "≈45%"
+            },
+            {
+              "label": "Vinardo",
+              "value": 45,
+              "display": "≈45%"
+            },
+            {
+              "label": "AD4",
+              "value": 45,
+              "display": "≈45%"
+            },
+            {
+              "label": "ML 모델 (최고치)",
+              "value": 17,
+              "display": "2~17%",
+              "tone": "warn"
+            }
           ],
           "caption": "본문 수치로 다시 그림. ML 모델은 범위(2~17%)만 보고되어 최고치로 표시했다."
         },
@@ -105,12 +196,40 @@
           "unit": "%",
           "max": 80,
           "items": [
-            {"label": "찍어서 맞힐 확률", "value": 50, "display": "50%", "tone": "muted"},
-            {"label": "RF-Score v2 · 정답 구조", "value": 72, "display": "≈72%", "highlight": true},
-            {"label": "메타모델 · 정답 구조", "value": 71, "display": "71%", "highlight": true},
-            {"label": "RF-Score v2 · 도킹 후", "value": 55, "display": "55%"},
-            {"label": "메타모델 · 도킹 후", "value": 55, "display": "55%"},
-            {"label": "RF-Score v1 · 전체 파이프라인", "value": 54, "display": "≈54%", "tone": "warn"}
+            {
+              "label": "찍어서 맞힐 확률",
+              "value": 50,
+              "display": "50%",
+              "tone": "muted"
+            },
+            {
+              "label": "RF-Score v2 · 정답 구조",
+              "value": 72,
+              "display": "≈72%",
+              "highlight": true
+            },
+            {
+              "label": "메타모델 · 정답 구조",
+              "value": 71,
+              "display": "71%",
+              "highlight": true
+            },
+            {
+              "label": "RF-Score v2 · 도킹 후",
+              "value": 55,
+              "display": "55%"
+            },
+            {
+              "label": "메타모델 · 도킹 후",
+              "value": 55,
+              "display": "55%"
+            },
+            {
+              "label": "RF-Score v1 · 전체 파이프라인",
+              "value": 54,
+              "display": "≈54%",
+              "tone": "warn"
+            }
           ],
           "caption": "본문 수치로 다시 그림. 아래로 갈수록 실제 사용 조건에 가깝고, 성적이 50% 쪽으로 내려온다."
         },
@@ -142,16 +261,43 @@
         {
           "type": "table",
           "title": "8개 모듈이 하는 일",
-          "headers": ["모듈", "역할"],
+          "headers": [
+            "모듈",
+            "역할"
+          ],
           "rows": [
-            ["Pipeline", "전체 작업 순서를 지휘하고 저장을 관리 (지휘자)"],
-            ["서열 모듈", "자연 서열 수집 또는 돌연변이 서열 생성"],
-            ["모델링 모듈", "3D 구조 예측과 품질 평가"],
-            ["도킹 모듈", "단백질-리간드 도킹, 결합 친화도 계산"],
-            ["측정 모듈", "단백질과 리간드 특정 원자 사이 거리 계산"],
-            ["필터·순위 모듈", "사용자 기준으로 포즈를 거르고 변이체 순위 매김"],
-            ["실행 모듈", "단일 스레드 또는 분산(MPI) 실행"],
-            ["데이터베이스 모듈", "SQLite3로 모든 결과 저장"]
+            [
+              "Pipeline",
+              "전체 작업 순서를 지휘하고 저장을 관리 (지휘자)"
+            ],
+            [
+              "서열 모듈",
+              "자연 서열 수집 또는 돌연변이 서열 생성"
+            ],
+            [
+              "모델링 모듈",
+              "3D 구조 예측과 품질 평가"
+            ],
+            [
+              "도킹 모듈",
+              "단백질-리간드 도킹, 결합 친화도 계산"
+            ],
+            [
+              "측정 모듈",
+              "단백질과 리간드 특정 원자 사이 거리 계산"
+            ],
+            [
+              "필터·순위 모듈",
+              "사용자 기준으로 포즈를 거르고 변이체 순위 매김"
+            ],
+            [
+              "실행 모듈",
+              "단일 스레드 또는 분산(MPI) 실행"
+            ],
+            [
+              "데이터베이스 모듈",
+              "SQLite3로 모든 결과 저장"
+            ]
           ],
           "caption": "본문의 모듈 설명을 표로 정리. 그림 속 모듈 이름 표기는 원문을 확인하세요."
         }
@@ -182,15 +328,39 @@
         {
           "type": "table",
           "title": "7개 테이블",
-          "headers": ["테이블", "담는 내용"],
+          "headers": [
+            "테이블",
+            "담는 내용"
+          ],
           "rows": [
-            ["Proteins", "기준 단백질 이름, UniProt ID"],
-            ["Variants", "변이체 이름(예: A:V220L), 서열, 야생형 여부"],
-            ["Models", "예측 구조, 사용 소프트웨어, 품질 점수, 거부 여부"],
-            ["Evaluations", "변이체·모델·포즈를 하나의 평가로 연결, 리간드와 방법"],
-            ["Poses", "도킹 포즈 번호와 에너지"],
-            ["Metrics", "필터에 쓰는 거리 기준의 이름"],
-            ["Measurements", "포즈별 거리 측정값"]
+            [
+              "Proteins",
+              "기준 단백질 이름, UniProt ID"
+            ],
+            [
+              "Variants",
+              "변이체 이름(예: A:V220L), 서열, 야생형 여부"
+            ],
+            [
+              "Models",
+              "예측 구조, 사용 소프트웨어, 품질 점수, 거부 여부"
+            ],
+            [
+              "Evaluations",
+              "변이체·모델·포즈를 하나의 평가로 연결, 리간드와 방법"
+            ],
+            [
+              "Poses",
+              "도킹 포즈 번호와 에너지"
+            ],
+            [
+              "Metrics",
+              "필터에 쓰는 거리 기준의 이름"
+            ],
+            [
+              "Measurements",
+              "포즈별 거리 측정값"
+            ]
           ]
         }
       ],
@@ -220,12 +390,39 @@
           "unit": "%",
           "max": 80,
           "items": [
-            {"label": "고전 함수 4종 · X-ray", "value": 50, "display": "≈50%", "tone": "muted"},
-            {"label": "고전 함수 4종 · 도킹 후", "value": 50, "display": "≈50%", "tone": "muted"},
-            {"label": "RF-Score v2 · X-ray", "value": 72, "display": "≈72%", "highlight": true},
-            {"label": "RF-Score v2 · 도킹 후", "value": 55, "display": "55%"},
-            {"label": "NNScore · X-ray", "value": 60, "display": "≈60%"},
-            {"label": "NNScore · 도킹 후", "value": 60, "display": "≈60%"}
+            {
+              "label": "고전 함수 4종 · X-ray",
+              "value": 50,
+              "display": "≈50%",
+              "tone": "muted"
+            },
+            {
+              "label": "고전 함수 4종 · 도킹 후",
+              "value": 50,
+              "display": "≈50%",
+              "tone": "muted"
+            },
+            {
+              "label": "RF-Score v2 · X-ray",
+              "value": 72,
+              "display": "≈72%",
+              "highlight": true
+            },
+            {
+              "label": "RF-Score v2 · 도킹 후",
+              "value": 55,
+              "display": "55%"
+            },
+            {
+              "label": "NNScore · X-ray",
+              "value": 60,
+              "display": "≈60%"
+            },
+            {
+              "label": "NNScore · 도킹 후",
+              "value": 60,
+              "display": "≈60%"
+            }
           ],
           "caption": "고전 함수 = Vina, Smina, Vinardo, AD4. 원본은 함수마다 파랑(X-ray)과 노랑(도킹 후) 막대가 짝지어 있고 오차막대가 있다."
         }
@@ -261,10 +458,28 @@
           "unit": "%",
           "max": 80,
           "items": [
-            {"label": "메타모델 · X-ray", "value": 71, "display": "71%", "highlight": true},
-            {"label": "RF-Score v2 · X-ray", "value": 72, "display": "≈72%"},
-            {"label": "메타모델 · 도킹 후", "value": 55, "display": "55%", "highlight": true},
-            {"label": "RF-Score v2 · 도킹 후", "value": 55, "display": "55%"}
+            {
+              "label": "메타모델 · X-ray",
+              "value": 71,
+              "display": "71%",
+              "highlight": true
+            },
+            {
+              "label": "RF-Score v2 · X-ray",
+              "value": 72,
+              "display": "≈72%"
+            },
+            {
+              "label": "메타모델 · 도킹 후",
+              "value": 55,
+              "display": "55%",
+              "highlight": true
+            },
+            {
+              "label": "RF-Score v2 · 도킹 후",
+              "value": 55,
+              "display": "55%"
+            }
           ],
           "caption": "RF-Score v2 값은 그림 3과 본문 수치."
         },
@@ -272,11 +487,32 @@
           "type": "bars",
           "title": "메타모델을 이루는 5개 모델의 가중치 (표 1)",
           "items": [
-            {"label": "Rf-Score v2", "value": 2.206, "display": "2.206", "highlight": true},
-            {"label": "Vinardo", "value": 0.056, "display": "0.056"},
-            {"label": "PLEClinear", "value": -0.057, "display": "−0.057"},
-            {"label": "PLECrf", "value": -0.178, "display": "−0.178"},
-            {"label": "Rf-Score v1", "value": -0.903, "display": "−0.903"}
+            {
+              "label": "Rf-Score v2",
+              "value": 2.206,
+              "display": "2.206",
+              "highlight": true
+            },
+            {
+              "label": "Vinardo",
+              "value": 0.056,
+              "display": "0.056"
+            },
+            {
+              "label": "PLEClinear",
+              "value": -0.057,
+              "display": "−0.057"
+            },
+            {
+              "label": "PLECrf",
+              "value": -0.178,
+              "display": "−0.178"
+            },
+            {
+              "label": "Rf-Score v1",
+              "value": -0.903,
+              "display": "−0.903"
+            }
           ],
           "caption": "선형회귀 메타모델의 계수. 절편 β0 = 2.259는 제외."
         }
@@ -309,9 +545,24 @@
           "unit": "%",
           "max": 80,
           "items": [
-            {"label": "찍어서 맞힐 확률", "value": 50, "display": "50%", "tone": "muted"},
-            {"label": "RF-Score v1 (최고)", "value": 54, "display": "≈54%", "highlight": true},
-            {"label": "참고: RF-Score v2 · X-ray (그림 3)", "value": 72, "display": "≈72%", "tone": "muted"}
+            {
+              "label": "찍어서 맞힐 확률",
+              "value": 50,
+              "display": "50%",
+              "tone": "muted"
+            },
+            {
+              "label": "RF-Score v1 (최고)",
+              "value": 54,
+              "display": "≈54%",
+              "highlight": true
+            },
+            {
+              "label": "참고: RF-Score v2 · X-ray (그림 3)",
+              "value": 72,
+              "display": "≈72%",
+              "tone": "muted"
+            }
           ]
         }
       ],
@@ -339,53 +590,45 @@
       "blocks": [
         {
           "type": "table",
-          "headers": ["구성 요소", "가중치"],
-          "rows": [["β0 (절편)", "2.259"], ["Rf-Score v1", "−0.903"], ["Rf-Score v2", "2.206"], ["PLECrf", "−0.178"], ["PLEClinear", "−0.057"], ["Vinardo", "0.056"]]
+          "headers": [
+            "구성 요소",
+            "가중치"
+          ],
+          "rows": [
+            [
+              "β0 (절편)",
+              "2.259"
+            ],
+            [
+              "Rf-Score v1",
+              "−0.903"
+            ],
+            [
+              "Rf-Score v2",
+              "2.206"
+            ],
+            [
+              "PLECrf",
+              "−0.178"
+            ],
+            [
+              "PLEClinear",
+              "−0.057"
+            ],
+            [
+              "Vinardo",
+              "0.056"
+            ]
+          ]
         }
       ],
       "what": "최적 메타모델 = 2.259 + 2.206×(RF-Score v2) − 0.903×(RF-Score v1) − 0.178×(PLECrf) − 0.057×(PLEClinear) + 0.056×(Vinardo) 형태의 선형 결합입니다.",
-      "findings": ["RF-Score v2의 비중이 압도적이다.", "고전 함수 중에서는 Vinardo 하나만 작은 가중치로 들어갔다."],
+      "findings": [
+        "RF-Score v2의 비중이 압도적이다.",
+        "고전 함수 중에서는 Vinardo 하나만 작은 가중치로 들어갔다."
+      ],
       "meaning": "그림 4의 가중치 막대그래프와 같은 내용입니다. 메타모델은 사실상 ‘RF-Score v2에 다른 모델로 약간 보정한 것’으로 읽을 수 있습니다."
     }
-  ],
-  "critique": {
-    "strengths": [
-      "여러 해 써 온 도구를 정리해 **누구나 쓸 수 있게 공개**했다.",
-      "점수 함수 11개를 같은 기준으로 비교했고, 신뢰구간(부트스트랩 10,000회)을 함께 보고했다.",
-      "데이터 누수를 줄인 leak-proof 분할을 쓰고, 테스트 세트를 끝까지 건드리지 않았다.",
-      "성적이 낮은 결과(전체 파이프라인 54%)도 숨기지 않고, 해석의 한계를 직접 적었다."
-    ],
-    "limitations": [
-      "실제 사용 조건에서 돌연변이 효과 예측이 **무작위보다 조금 나은 수준**이다.",
-      "결합 친화도는 촉매 효율의 대리 지표일 뿐이다. kcat이나 전이 상태 안정화는 다루지 않는다.",
-      "단백질을 단단하다고 가정하고, 리간드 없이 만든 상동성 모델을 쓴다.",
-      "ML 함수는 실험 구조로 학습되어 예측 구조에 약하다.",
-      "성공 사례로 든 실제 적용 중 출판된 것은 두 건이고, 나머지는 ‘곧 나올’ 예정이다.",
-      "평가는 ΔΔG의 부호만 보고, 효소 활성을 직접 측정한 실험 검증은 이 논문에 없다."
-    ],
-    "easy": "한마디로 **설계가 잘된 도구 논문이고 결과 보고도 정직하지만, 예측력 자체는 아직 약하다**고 평가할 수 있습니다. 보고서에 쓸 때 ‘컴퓨터가 좋은 효소를 찾아 준다’고 쓰면 과장이고, ‘실험 전에 후보를 줄이는 데 쓴다’가 정확합니다."
-  },
-  "glossary": [
-    {"term": "효소 공학", "en": "enzyme engineering", "desc": "아미노산을 바꿔 효소의 성질(속도, 선택성, 안정성)을 개량하는 일."},
-    {"term": "유전자 발굴", "en": "gene discovery", "desc": "자연에 있는 비슷한 효소들 중 원하는 반응을 잘할 것 같은 것을 찾는 일."},
-    {"term": "율속 단계", "en": "rate-limiting step", "desc": "여러 단계 반응 중 가장 느려서 전체 속도를 정하는 단계."},
-    {"term": "촉매 효율", "en": "kcat/Km", "desc": "효소가 얼마나 빠르고(kcat) 기질을 얼마나 잘 잡는지(Km)를 합친 지표. 클수록 좋다."},
-    {"term": "상동성 모델링", "en": "homology modeling", "desc": "구조를 아는 비슷한 단백질을 틀로 삼아 새 서열의 3D 구조를 예측하는 방법."},
-    {"term": "분자 도킹", "en": "molecular docking", "desc": "작은 분자(리간드)가 단백질의 어느 자리에 어떤 자세로 얼마나 세게 붙는지 계산으로 찾는 방법."},
-    {"term": "포즈", "en": "pose", "desc": "도킹에서 리간드가 단백질에 붙어 있는 자세 하나."},
-    {"term": "점수 함수", "en": "scoring function", "desc": "포즈의 결합 세기를 숫자로 매기는 공식. Vina 같은 고전 함수와 RF-Score 같은 ML 함수가 있다."},
-    {"term": "결합 자유에너지", "en": "ΔG", "desc": "결합의 세기. 더 음수일수록 더 세게 붙는다."},
-    {"term": "ΔΔG", "desc": "변이체와 야생형의 ΔG 차이. 부호가 돌연변이가 결합을 좋게 했는지 나쁘게 했는지를 알려 준다."},
-    {"term": "RMSD 2 Å", "desc": "예측한 포즈와 실제 결정 구조 포즈의 평균 원자 거리 차이가 2 옹스트롬 이내면 ‘맞혔다’고 보는 관례적 기준."},
-    {"term": "스태킹 앙상블", "en": "stacking", "desc": "여러 모델의 예측값을 입력으로 받아 최종 예측을 내는 상위 모델을 두는 방법."},
-    {"term": "데이터 누수", "en": "data leakage", "desc": "시험 문제와 비슷한 자료가 학습에 섞여 성능이 부풀려지는 문제."},
-    {"term": "부트스트랩 신뢰구간", "desc": "자료를 복원추출로 여러 번 다시 뽑아 결과가 얼마나 흔들리는지로 구한 구간."}
-  ],
-  "quiz": [
-    {"q": "GDEE는 촉매 효율을 직접 계산하나요?", "a": "아니요. 계산이 너무 무거워서 **결합 친화도를 대리 지표**로 씁니다. 저자들은 결합이 좋아져도 촉매가 좋아진다는 보장은 없다고 밝힙니다."},
-    {"q": "도킹 자세 찾기와 결합 세기 예측에서 각각 어떤 점수 함수가 나았나요?", "a": "자세 찾기는 Vina(54%)가, 결합 세기 예측은 ML 함수(특히 RF-Score v2)가 나았습니다. 그래서 ‘Vina로 포즈, ML로 재채점’을 권합니다."},
-    {"q": "돌연변이 효과 부호 예측에서 50%가 중요한 기준인 이유는?", "a": "좋아짐/나빠짐 두 가지 중 하나를 맞히는 문제라 무작위로 찍어도 50%이기 때문입니다. 고전 함수는 약 50%였습니다."},
-    {"q": "RF-Score v2가 X-ray에서는 72%인데 플랫폼 전체에서는 왜 성적이 떨어질까요?", "a": "실제 플랫폼은 예측 구조, 단단한 단백질 도킹, 포즈 선택을 거치며 오차가 쌓이고, ML 함수는 실험 구조로만 학습해서 예측 구조에 익숙하지 않기 때문이라고 저자들은 봅니다. 전체 파이프라인 최고 성적은 RF-Score v1의 약 54%였습니다."}
   ],
   "relevance": {
     "summary": "`profile/my-projects.md` 가 아직 비어 있어서 보고서·과제 주제와의 연관도는 매기지 못했습니다. 지금 알고 있는 내 프로젝트(GitHub의 Paper Reader)와, 어떤 보고서에서든 쓸 수 있는 활용법을 먼저 정리했습니다. 보고서나 프로젝트 주제를 알려 주시면 이 섹션을 다시 만들어 드립니다.",

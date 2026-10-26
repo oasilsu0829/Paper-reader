@@ -5,6 +5,7 @@
 
 - 그림 이미지는 HTML 안에 넣어(base64) 파일 하나로 열리고 공유된다.
 - library/README.md 의 읽은 논문 목록도 함께 갱신한다.
+- 같은 폴더에 paper.json 이 있으면 서지 정보, 캡션, 이미지, 표 숫자를 자동으로 채운다.
 - report.json 형식은 docs/report-schema.md 참고.
 """
 import base64
@@ -14,6 +15,7 @@ import math
 import mimetypes
 import re
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -283,6 +285,44 @@ def figure_card(f, base):
     return "\n".join(h)
 
 
+# ---------------------------------------------------------------- paper.json 자동 채우기
+
+def merge_paper(rep, base):
+    """fetch_paper.py 가 만든 paper.json 에서 서지 정보, 캡션, 이미지 경로, 표 숫자를 채운다.
+    report.json 에 이미 있는 값은 건드리지 않으므로 Claude는 해석만 쓰면 된다."""
+    m = rep.setdefault("meta", {})
+    pj = base / "paper.json"
+    if pj.is_file():
+        paper = json.loads(pj.read_text(encoding="utf-8"))
+        pm, ids = paper.get("meta", {}), paper.get("ids", {})
+        for k, v in (("title", pm.get("title")), ("authors", pm.get("authors")),
+                     ("journal", pm.get("journal")), ("year", pm.get("year")),
+                     ("pmid", ids.get("pmid")), ("pmcid", ids.get("pmcid")),
+                     ("doi", ids.get("doi")), ("url", paper.get("url")),
+                     ("read_date", paper.get("fetched"))):
+            if v and not m.get(k):
+                m[k] = v
+        src = {}
+        for it in (paper.get("figures") or []) + (paper.get("tables") or []):
+            src[it.get("id")] = it
+            src[it.get("label")] = it
+        for card in (rep.get("figures") or []) + (rep.get("tables") or []):
+            it = src.get(card.get("id")) or src.get(card.get("label"))
+            if not it:
+                continue
+            card.setdefault("label", it.get("label"))
+            if not card.get("caption") and it.get("caption"):
+                card["caption"] = it["caption"]
+            if not card.get("image") and it.get("image"):
+                card["image"] = it["image"]
+            rows = it.get("rows") or []
+            if rows and not card.get("blocks") and not card.get("image"):
+                card["blocks"] = [{"type": "table", "headers": rows[0], "rows": rows[1:],
+                                   "caption": it.get("footnote", "")}]
+    m.setdefault("read_date", time.strftime("%Y-%m-%d"))
+    return rep
+
+
 # ---------------------------------------------------------------- 조립
 
 def build(rep, base):
@@ -332,23 +372,6 @@ def build(rep, base):
     if figs:
         intro = md(rep.get("figures_intro")) if rep.get("figures_intro") else ""
         sec("figures", "그림·표 해석", "그림과 표 읽기", f'<div class="prose">{intro}</div>' + "".join(figure_card(f, base) for f in figs))
-
-    cr = rep.get("critique")
-    if cr:
-        inner = block_compare({"left": {"title": "믿을 만한 점", "items": cr.get("strengths")},
-                               "right": {"title": "조심할 점", "items": cr.get("limitations")}})
-        inner += easy_detail(cr)
-        sec("critique", "비판적 읽기", "얼마나 믿을 수 있나", inner)
-
-    gl = rep.get("glossary") or []
-    if gl:
-        items = "".join(f'<dt>{esc(g.get("term"))}{"<small>" + esc(g["en"]) + "</small>" if g.get("en") else ""}</dt><dd>{inline(g.get("desc"))}</dd>' for g in gl)
-        sec("glossary", "용어 사전", "모르는 단어 정리", f'<dl class="gloss">{items}</dl>')
-
-    qz = rep.get("quiz") or []
-    if qz:
-        items = "".join(f'<details><summary>{inline(q.get("q"))}</summary><div class="prose">{md(q.get("a"))}</div></details>' for q in qz)
-        sec("quiz", "셀프 체크", "이해했는지 확인", f'<div class="quiz">{items}</div>')
 
     rel = rep.get("relevance")
     if rel:
@@ -414,7 +437,7 @@ def main():
         raise SystemExit(f"report.json이 없습니다: {rj}")
     rep = json.loads(rj.read_text(encoding="utf-8"))
     out = rj.parent / "report.html"
-    out.write_text(build(rep, rj.parent), encoding="utf-8")
+    out.write_text(build(merge_paper(rep, rj.parent), rj.parent), encoding="utf-8")
     if rj.parent.parent.resolve() == (ROOT / "library").resolve():
         update_index()
     size = out.stat().st_size
